@@ -1,11 +1,11 @@
 'use client'
 
-import SubTitle from "@/app/components/SubTitle";
-import Container from "../../components/Container";
-import KwTable from "../../components/KwTable";
-import Title from "../../components/Title";
-import CustomTextarea from "@/app/components/CustomTextarea";
 import { useState } from "react";
+import SubTitle from "@/app/components/SubTitle";
+import Container from "@/app/components/Container";
+import KwTable from "@/app/components/KwTable";
+import Title from "@/app/components/Title";
+import CustomTextarea from "@/app/components/CustomTextarea";
 import withAuth from "@/app/components/withAuth";
 
 interface Keyword {
@@ -16,7 +16,7 @@ interface Keyword {
   saved: number;
 }
 
-const Home = () => {
+const Home: React.FC = () => {
   const [keywords, setKeywords] = useState<Keyword[]>([]);
 
   const handleKeywordsGenerated = (newKeywords: Keyword[]) => {

@@ -5,7 +5,8 @@ import { FaPencilAlt } from "react-icons/fa"
 import InputWindow from "./InputWindow";
 import SelectTag from "./SelectTag";
 
-const Config = ({ dragHandleProps }) => {
+
+const Config = ({ dragHandleProps }: {dragHandleProps: any}) => {
     const [isActive, setIsActive] = useState(false);
     const handleActivate = () => {
         setIsActive(true);

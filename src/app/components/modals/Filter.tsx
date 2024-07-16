@@ -62,8 +62,8 @@ const Filter: React.FC<FilterProps> = ({
                             </div>
                         </div>
                         <div className="flex flex-row gap-4 items-center justify-end">
-                            <Button onClick={() => {}} outline label="キャンセル" />
-                            <Button onClick={() => {}} common label="適用" />
+                            <Button className="custom-class" onClick={() => {}} outline label="キャンセル" />
+                            <Button className="custom-class" onClick={() => {}} common label="適用" />
                         </div>
                     </form>
                 </div>

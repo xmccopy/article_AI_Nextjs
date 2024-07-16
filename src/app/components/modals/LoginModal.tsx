@@ -15,6 +15,10 @@ interface LoginResponse {
         email: string;
         username: string;
     };
+    backendTokens: {
+        accessToken: string;
+    }
+
 }
 
 interface LoginError {

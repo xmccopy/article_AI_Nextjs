@@ -15,7 +15,7 @@ const ConfigList = () => {
         { id: "config7", content: "" },
     ]);
 
-    const onDragEnd = (result) => {
+    const onDragEnd = (result: any) => {
         if (!result.destination) return;
 
         const items = Array.from(configs);
@@ -40,7 +40,7 @@ const ConfigList = () => {
                                             {...provided.dragHandleProps}
                                             className="w-full"
                                         >
-                                            <Config />
+                                             <Config dragHandleProps={provided.dragHandleProps} />
                                         </div>
                                     )}
                                 </Draggable>
