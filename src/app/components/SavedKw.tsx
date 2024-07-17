@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import axios from 'axios';
 import Credit from "./modals/Credit";
 import SpinSetting from "./Spin";
+import { FaStar } from "react-icons/fa";
 
 interface Keyword {
     id: number;
@@ -91,7 +92,7 @@ const statusKw = () => {
                     throw new Error('No authentication token found');
                 }
     
-                const response = await axios.get('http://192.168.136.127:8000/keyword', {
+                const response = await axios.get('http://localhost:8000/keyword', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -161,7 +162,13 @@ const statusKw = () => {
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
                                 <td className="whitespace-nowrap flex items-center justify-center py-2">
-                                    <Button onClick={() => { }} outline roundBtn className={getStatusStyle(keyword.status)} label={getStatusLabel(keyword.status)} />
+                                    <Button 
+                                        onClick={() => { }} 
+                                        outline 
+                                        roundBtn 
+                                        className={getStatusStyle(keyword.status)} 
+                                        label={getStatusLabel(keyword.status)} 
+                                    />
                                 </td>
                                 <td className="whitespace-nowrap py-2 ml-8">
                                     <div className="flex justify-around items-center">
@@ -172,6 +179,7 @@ const statusKw = () => {
                                             disabled={false}
                                             isLoading={false}
                                             label={getStatusLabelBtn(keyword.status)}
+                                            icon={FaStar}
                                         />
                                         <FaEllipsisVertical size={20} />
                                     </div>

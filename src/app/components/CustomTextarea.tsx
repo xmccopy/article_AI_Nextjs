@@ -43,7 +43,7 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({ onKeywordsGenerated }) 
         throw new Error('No authentication token found');
       }
       const response = await axios.post<Keyword[]>(
-        'http://192.168.136.127:8000/keyword/generate',
+        'http://localhost:8000/keyword/generate',
         {
           keywords: tags.map(tag => tag.text)
         },

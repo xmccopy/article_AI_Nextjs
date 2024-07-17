@@ -67,7 +67,7 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
 
             console.log("data:", selectedKeywordsArray);
 
-            const response = await fetch('http://192.168.136.127:8000/keyword/create', {
+            const response = await fetch('http://localhost:8000/keyword/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

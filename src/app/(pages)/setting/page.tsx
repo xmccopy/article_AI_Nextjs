@@ -69,7 +69,7 @@ const Home = () => {
       }
 
       const response = await axios.post(
-        "http://192.168.136.127:8000/article",
+        "http://localhost:8000/article",
         { keyword: `"${keyword}"` },
         {
           headers: {
@@ -107,7 +107,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://192.168.136.127:8000/article/title/${articleId}`,
+        `http://localhost:8000/article/title/${articleId}`,
         { subkeywords: subKeywords },
         {
           headers: {
@@ -148,7 +148,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://192.168.136.127:8000/article/config/${articleId}`,
+        `http://localhost:8000/article/config/${articleId}`,
         { title: finalTitle },
         {
           headers: {
@@ -314,7 +314,7 @@ const Home = () => {
         <SubTitle order="3" label="記事構成を作成してください" sublabel="" />
         <div className="flex sm:flex-row flex-col">
           <FinalSet
-            keyword="シミが消える化粧品ランキング"
+            keyword={keyword}
             subkeyword="アットコスメ"
             title="シミが消える？〜〜〜〜〜"
           />

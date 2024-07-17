@@ -1,5 +1,7 @@
 'use client'
 
+import { IconType } from "react-icons";
+
 interface ButtonProps {
     label: string;
     roundBtn?: boolean;
@@ -11,6 +13,7 @@ interface ButtonProps {
     isLoading?: boolean;
     className: string;
     titleLimit?: number;
+    icon?: IconType;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,7 +26,8 @@ const Button: React.FC<ButtonProps> = ({
     onClick,
     isLoading,
     className = "",
-    titleLimit
+    titleLimit,
+    icon: Icon
 }) => {
     return (
         <button
@@ -59,8 +63,9 @@ const Button: React.FC<ButtonProps> = ({
                     生成中...
                 </div>
             ) : (
-                <span className="flex items-center justify-center">
+                <span className="flex items-center justify-center gap-2">
                     {label}
+                    {Icon && <Icon size={18} className="text-yellow-300"/>}
                     {titleLimit !== undefined && (
                         <span className={`ml-2 text-xs transition-all ${titleLimit <= 1 ? 'text-red-500' : ''}`}>
                             （{titleLimit}/3）
