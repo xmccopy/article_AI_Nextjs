@@ -14,7 +14,6 @@ const KwInput = () => {
                     onClick={() => {}} 
                     label="生成する" 
                 />
-               
             </div>
         </form>
     )

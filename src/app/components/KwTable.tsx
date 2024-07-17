@@ -6,9 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 interface Keyword {
     text: string;
-    keywordIdeaMetrics: {
-        avgMonthlySearches: string;
-    };
+    volume: string;
     saved: number;
 }
 
@@ -64,12 +62,12 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
             // Convert selected keywords to an array of strings
             const selectedKeywordsArray = Array.from(selectedKeywords).map(index => ({
                 keyword: keywords[index].text,
-                // volume: keywords[index].keywordIdeaMetrics.avgMonthlySearches,
+                volume: keywords[index].volume,
             }));
 
             console.log("data:", selectedKeywordsArray);
 
-            const response = await fetch('http://5.253.41.184:8000/keyword/create', {
+            const response = await fetch('http://192.168.136.127:8000/keyword/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +131,7 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                                     />
                                 </td>
                                 <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.text}</td>
-                                <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.keywordIdeaMetrics.avgMonthlySearches}</td>
+                                <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
                                 <td className="py-2">
                                     <Button
                                         className="custom-class"

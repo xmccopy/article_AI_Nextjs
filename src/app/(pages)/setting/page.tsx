@@ -69,7 +69,7 @@ const Home = () => {
       }
 
       const response = await axios.post(
-        "http://5.253.41.184:8000/article",
+        "http://192.168.136.127:8000/article",
         { keyword: `"${keyword}"` },
         {
           headers: {
@@ -107,7 +107,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://5.253.41.184:8000/article/title/${articleId}`,
+        `http://192.168.136.127:8000/article/title/${articleId}`,
         { subkeywords: subKeywords },
         {
           headers: {
@@ -148,7 +148,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://5.253.41.184:8000/article/config/${articleId}`,
+        `http://192.168.136.127:8000/article/config/${articleId}`,
         { title: finalTitle },
         {
           headers: {

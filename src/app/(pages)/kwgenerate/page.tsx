@@ -10,9 +10,7 @@ import withAuth from "@/app/components/withAuth";
 
 interface Keyword {
   text: string;
-  keywordIdeaMetrics: {
-    avgMonthlySearches: string;
-  };
+  volume: string;
   saved: number;
 }
 

@@ -17,7 +17,7 @@ interface Keyword {
     status: string;
 }
 
-const SavedKw = () => {
+const statusKw = () => {
     const router = useRouter();
     const [filterShow, setFilterShow] = useState(false);
     const [keywords, setKeywords] = useState<Keyword[]>([]);
@@ -91,7 +91,7 @@ const SavedKw = () => {
                     throw new Error('No authentication token found');
                 }
     
-                const response = await axios.get('http://5.253.41.184:8000/keyword', {
+                const response = await axios.get('http://192.168.136.127:8000/keyword', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -185,4 +185,4 @@ const SavedKw = () => {
     )
 }
 
-export default SavedKw;
+export default statusKw;
