@@ -45,7 +45,7 @@ const RegisterModal = () => {
 
         try {
             const response = await axios.post<RegisterResponse>(
-                'http://localhost:8000/auth/register',
+                'http://192.168.136.127:8000/auth/register',
                 {
                     username,
                     email,

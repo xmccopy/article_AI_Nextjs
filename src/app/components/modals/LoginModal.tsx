@@ -70,7 +70,7 @@ const LoginModal = () => {
 
         try {
             const response = await axios.post<LoginResponse>(
-                'http://localhost:8000/auth/login',
+                'http://192.168.136.127:8000/auth/login',
                 {
                     email,
                     password,

@@ -1,56 +1,71 @@
-'use client'
+import React from 'react';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
+import ConfigEdit from './ConfigEdit';
 
-import { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Config from "./Config";
+interface Subtitle {
+    id: string;
+    tag: string;
+    text: string;
+}
 
-const ConfigList = () => {
-    const [configs, setConfigs] = useState([
-        { id: "config1", content: "" },
-        { id: "config2", content: "" },
-        { id: "config3", content: "" },
-        { id: "config4", content: "" },
-        { id: "config5", content: "" },
-        { id: "config6", content: "" },
-        { id: "config7", content: "" },
-    ]);
+interface Config {
+    id: string;
+    tag: string;
+    text: string;
+    subtitles: Subtitle[];
+}
 
-    const onDragEnd = (result: any) => {
-        if (!result.destination) return;
+interface ConfigListProps {
+    configs: Config[];
+}
 
-        const items = Array.from(configs);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
-
-        setConfigs(items);
-    };
-
+const ConfigList: React.FC<ConfigListProps> = ({ configs }) => {
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="configs">
-                {(provided) => (
-                    <table {...provided.droppableProps} ref={provided.innerRef}>
-                        <tbody>
-                            {configs.map((config, index) => (
-                                <Draggable key={config.id} draggableId={config.id} index={index}>
-                                    {(provided) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className="w-full"
-                                        >
-                                             <Config dragHandleProps={provided.dragHandleProps} />
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </tbody>
-                    </table>
-                )}
-            </Droppable>
-        </DragDropContext>
+        <Droppable droppableId="configs" type="h2">
+            {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {configs.map((config, index) => (
+                        <Draggable key={config.id} draggableId={config.id} index={index}>
+                            {(provided) => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                >
+                                    <ConfigEdit configcontent={config.text} />
+                                    <Droppable droppableId={`h2-${index}`} type="h3">
+                                        {(provided) => (
+                                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                                                {config.subtitles.map((subtitle, subIndex) => (
+                                                    <Draggable
+                                                        key={subtitle.id}
+                                                        draggableId={subtitle.id}
+                                                        index={subIndex}
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className='ml-6 text-[14px]'
+                                                            >
+                                                                <ConfigEdit configcontent={subtitle.text} />
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                </div>
+                            )}
+                        </Draggable>
+                    ))}
+                    {provided.placeholder}
+                </div>
+            )}
+        </Droppable>
     );
 };
 

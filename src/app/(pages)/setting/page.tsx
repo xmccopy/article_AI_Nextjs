@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react";
 import withAuth from "@/app/components/withAuth";
+import ConfigManager from "@/app/components/ConfigManager";
 
 interface SubKeyword {
   text: string;
@@ -39,11 +40,38 @@ const Home = () => {
   const [finalTitle, setFinalTitle] = useState('');
 
   const configdes = [
-    "テキストテキストテキストテキスト",
-    "テキストテキストテキスト",
-    "テキストテキストテキストテキストテキスト",
-    "テキストテキスト"
-  ]
+    {
+      id: "config1",
+      tag: "h2",
+      text: "The first h2 tag title",
+      subtitles: [
+        { id: "subtitle1-1", tag: "h3", text: "h3 tags title 1-1" },
+        { id: "subtitle1-2", tag: "h3", text: "h3 tags title 1-2" },
+        { id: "subtitle1-3", tag: "h3", text: "h3 tags title 1-3" },
+        { id: "subtitle1-4", tag: "h3", text: "h3 tags title 1-4" },
+      ],
+    },
+    {
+      id: "config2",
+      tag: "h2",
+      text: "The second h2 tag title",
+      subtitles: [
+        { id: "subtitle2-1", tag: "h3", text: "h3 tags title 2-1" },
+        { id: "subtitle2-2", tag: "h3", text: "h3 tags title 2-2" },
+        { id: "subtitle2-4", tag: "h3", text: "h3 tags title 2-3" },
+      ],
+    },
+    {
+      id: "config3",
+      tag: "h2",
+      text: "The third h2 tag title",
+      subtitles: [
+        { id: "subtitle3-1", tag: "h3", text: "h3 tags title 3-1" },
+        { id: "subtitle3-2", tag: "h3", text: "h3 tags title 3-2" },
+      ],
+    },
+  ];
+
 
   const route = useRouter();
 
@@ -69,7 +97,7 @@ const Home = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:8000/article",
+        "http://192.168.136.127:8000/article",
         { keyword: `"${keyword}"` },
         {
           headers: {
@@ -107,7 +135,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://localhost:8000/article/title/${articleId}`,
+        `http://192.168.136.127:8000/article/title/${articleId}`,
         { subkeywords: subKeywords },
         {
           headers: {
@@ -141,14 +169,15 @@ const Home = () => {
     if (titleFinalGenerationLimit <= 0) return;
 
     setBtnTitleIsLoading(true);
+    console.log(finalTitle)
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.patch(
-        `http://localhost:8000/article/config/${articleId}`,
+      const response = await axios.post(
+        `http://192.168.136.127:8000/article/config/${articleId}`,
         { title: finalTitle },
         {
           headers: {
@@ -161,9 +190,9 @@ const Home = () => {
       console.log("Updated article:", response.data);
 
       // Assuming the API returns generated titles
-      // if (response.data.generatedTitles) {
-      //   setGenerateTitles(response.data.generatedTitles);
-      // }
+      if (response.data) {
+        setGenerateTitles(response.data);
+      }
 
       setTitleFinalGenerationLimit(prev => Math.max(0, prev - 1));
     } catch (error) {
@@ -330,7 +359,7 @@ const Home = () => {
                   </tr>
                 </thead>
               </table>
-              <ConfigList />
+              <ConfigManager initialConfigs={configdes} />
             </div>
           </div>
         </div>
@@ -340,7 +369,6 @@ const Home = () => {
             onClick={handlearticleend}
             common
             label="記事を生成する"
-
           />
         </div>
       </div>

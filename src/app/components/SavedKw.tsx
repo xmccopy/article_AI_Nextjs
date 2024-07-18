@@ -92,7 +92,7 @@ const statusKw = () => {
                     throw new Error('No authentication token found');
                 }
     
-                const response = await axios.get('http://localhost:8000/keyword', {
+                const response = await axios.get('http://192.168.136.127:8000/keyword', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
