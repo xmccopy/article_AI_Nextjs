@@ -89,14 +89,16 @@ const ArticleSetting = () => {
                 if (!token) {
                     throw new Error('No authentication token found');
                 }
-    
-                const response = await axios.get('http://192.168.136.127:8000/keyword', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-    
+
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL!}/keyword`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
                 console.log("keyword", response.data);
                 setKeywords(response.data);
             } catch (error) {
@@ -109,7 +111,7 @@ const ArticleSetting = () => {
                 setIsLoading(false);
             }
         };
-    
+
         fetchKeywords();
     }, []);
 
@@ -178,9 +180,9 @@ const ArticleSetting = () => {
                                 </td>
                                 <td className="whitespace-nowrap py-2 ml-8">
                                     <div className="flex justify-around items-center">
-                                        <Button 
+                                        <Button
                                             className="custom-class"
-                                            onClick={() => {handleButtonClick(keyword)}} 
+                                            onClick={() => { handleButtonClick(keyword) }}
                                             common
                                             disabled={false}
                                             isLoading={false}

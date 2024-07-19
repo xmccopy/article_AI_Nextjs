@@ -2,8 +2,13 @@
 
 interface FinalSetProps {
     keyword: string;
-    subkeyword: string; ///array..
+    subkeyword: SubKeyword[]; ///array..
     title: string;
+}
+
+interface SubKeyword {
+    text: string;
+    selected: boolean;
 }
 
 const FinalSet: React.FC<FinalSetProps> = ({
@@ -21,8 +26,12 @@ const FinalSet: React.FC<FinalSetProps> = ({
             </div>
             <div className="flex flex-col gap-3 w-full">
                 <p className="text-[14px]">サブキーワード</p>
-                <div className="w-full bg-white sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg">
-                    {subkeyword}
+                <div className="w-full bg-white sm:w-[350px]  p-[12px] text-base border-2 rounded-lg">
+                    {subkeyword.filter(sk => sk.selected).map((sk, index) => (
+                        <span key={index} className="mr-2">
+                           {sk.text},
+                        </span>
+                    ))}
                 </div>
             </div>
             <div className="flex flex-col gap-3 w-full">
@@ -33,7 +42,7 @@ const FinalSet: React.FC<FinalSetProps> = ({
             </div>
             <div className="flex flex-col gap-3 w-full">
                 <p className="text-[14px]">カテゴリ</p>
-                <input type="text" className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg" placeholder="カテゴリーを入力してください"/>
+                <input type="text" className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg" placeholder="カテゴリーを入力してください" />
             </div>
         </div>
     )

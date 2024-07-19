@@ -1,7 +1,8 @@
-import React, { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import React, { useState, KeyboardEvent, useRef, useEffect, useMemo } from 'react';
 import { IoMdClose } from "react-icons/io";
 import Button from './Button';
 import axios from 'axios';
+import ApiService from '@/utils/ApiService';
 
 interface Tag {
   id: string;
@@ -24,6 +25,8 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({ onKeywordsGenerated }) 
   const [tags, setTags] = useState<Tag[]>([]);
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const apiService = useMemo(() => new ApiService("http://192.168.136.127:8000"), []);
+
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && content.trim()) {
@@ -42,18 +45,20 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({ onKeywordsGenerated }) 
       if (!token) {
         throw new Error('No authentication token found');
       }
-      const response = await axios.post<Keyword[]>(
-        'http://192.168.136.127:8000/keyword/generate',
-        {
-          keywords: tags.map(tag => tag.text)
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      // const response = await axios.post<Keyword[]>(
+      //   'http://192.168.136.127:8000/keyword/generate',
+      //   {
+      //     keywords: tags.map(tag => tag.text)
+      //   },
+      //   {
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${token}`
+      //     }
+      //   }
+      // );
+      apiService.setToken(token);
+      const response = await apiService.generateKeywords(tags);
 
       const newKeywords = response.data;
       console.log("ads response: ", newKeywords);

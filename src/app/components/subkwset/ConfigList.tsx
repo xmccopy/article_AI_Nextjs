@@ -33,8 +33,12 @@ const ConfigList: React.FC<ConfigListProps> = ({ configs }) => {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
+                                    className='ml-4'
                                 >
-                                    <ConfigEdit configcontent={config.text} />
+                                    <div className='flex items-center justify-start gap-1'>
+                                        <h2 className='font-bold'>h2</h2>
+                                        <ConfigEdit configcontent={config.text} />
+                                    </div>
                                     <Droppable droppableId={`h2-${index}`} type="h3">
                                         {(provided) => (
                                             <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -49,9 +53,12 @@ const ConfigList: React.FC<ConfigListProps> = ({ configs }) => {
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
-                                                                className='ml-6 text-[14px]'
+                                                                className='flex ml-6 text-[14px]'
                                                             >
-                                                                <ConfigEdit configcontent={subtitle.text} />
+                                                                <div className='flex items-center justify-start gap-1'>
+                                                                    <h3>h3</h3>
+                                                                    <ConfigEdit configcontent={subtitle.text} />
+                                                                </div>
                                                             </div>
                                                         )}
                                                     </Draggable>

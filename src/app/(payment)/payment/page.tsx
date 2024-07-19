@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import ApiService from "@/utils/ApiService";
@@ -22,7 +22,7 @@ const StripePlan = () => {
     const [getPlan, setGetPlan] = useState<AllPlan[]>([]);
     // const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
-    const apiService = new ApiService("http://192.168.136.127:8000");
+    const apiService = useMemo(() => new ApiService("http://192.168.136.127:8000"), []);
 
     const tofirstpage = () => {
         router.push('/kwgenerate')
@@ -96,10 +96,6 @@ const StripePlan = () => {
                 const response = await apiService.getPlans();
                 setGetPlan(response.data.allPlan);
 
-
-                console.log("dsfgdfg", response.data.allPlan);
-                console.log("plan", getPlan);
-
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.log("Failed to fetch keywords:", error.response?.data || error.message);
@@ -112,7 +108,7 @@ const StripePlan = () => {
         };
 
         fetchPlan();
-    }, []);
+    }, [apiService, getPlan]);
 
     return (
         <div className="bg-white py-24 sm:py-32">

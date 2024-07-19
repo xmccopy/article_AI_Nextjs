@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Button from "./Button";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 interface Keyword {
     text: string;
     volume: string;
@@ -23,12 +23,6 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
     useEffect(() => {
         setKeywords(initialKeywords);
     }, [initialKeywords]);
-
-    // useEffect(() => {
-    //     if (shouldNavigate) {
-    //         router.push('/savedkw');
-    //     }
-    // }, [shouldNavigate, router])
 
     const toggleKeyword = (index: number) => {
         setSelectedKeywords(prev => {
@@ -59,7 +53,7 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                 throw new Error('No authentication token found');
             }
 
-            // Convert selected keywords to an array of strings
+            // Convert selected keywords to an array of objects
             const selectedKeywordsArray = Array.from(selectedKeywords).map(index => ({
                 keyword: keywords[index].text,
                 volume: keywords[index].volume,
@@ -67,34 +61,33 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
 
             console.log("data:", selectedKeywordsArray);
 
-            const response = await fetch('http://192.168.136.127:8000/keyword/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ data: selectedKeywordsArray }),
-            });
+            const response = await axios.post('http://192.168.136.127:8000/keyword/create',
+                { data: selectedKeywordsArray },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
 
-            if (!response.ok) {
-                throw new Error('Failed to store keywords');
-            }
-
-            const savedKeywords = await response.json();
-            console.log("Saved keywords:", savedKeywords);
+            console.log("Saved keywords:", response.data);
 
             // Update local state to reflect saved keywords
             setKeywords(prev => prev.map((kw, index) =>
                 selectedKeywords.has(index) ? { ...kw, saved: 1 } : kw
             ));
             setSelectedKeywords(new Set());
+
+            // Navigate to the saved keywords page
+            router.push('/savedkw');
         } catch (error) {
-            console.error("Failed to generate keywords:", error);
+            console.error("Failed to store keywords:", error);
             // Handle error (e.g., show error message to user)
         } finally {
             setIsLoading(false);
-            router.push('/savedkw');
         }
+
     };
 
     return (
@@ -136,9 +129,9 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                                     <Button
                                         className="custom-class"
                                         disabled={false}
-                                        onClick={() => { }} 
-                                        outline 
-                                        label={keyword.saved === 1 ? "生成済み" : "未生成"} 
+                                        onClick={() => { }}
+                                        outline
+                                        label={keyword.saved === 1 ? "生成済み" : "未生成"}
                                     />
                                 </td>
                             </tr>
@@ -147,14 +140,14 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                 </table>
             </div>
             <div className="flex justify-end">
-                    <Button
-                        className="custom-class"
-                        onClick={handleGenerate}
-                        common
-                        label="生成する"
-                        isLoading={isLoading}
-                        disabled={isLoading || selectedKeywords.size === 0}
-                    />
+                <Button
+                    className="custom-class"
+                    onClick={handleGenerate}
+                    common
+                    label="保存をする"
+                    isLoading={isLoading}
+                    disabled={isLoading || selectedKeywords.size === 0}
+                />
             </div>
         </div>
     );

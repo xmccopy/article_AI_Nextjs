@@ -7,6 +7,17 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useAuth } from "../sidebar/AuthContext";
 import ApiService from "@/utils/ApiService";
+import Image from "next/image";
+
+interface RegisterResponse {
+    user: {
+        id: string;
+        email: string;
+        username: string;
+        company: string;
+    };
+    token: string;
+}
 
 const RegisterModal = () => {
     const { setUser } = useAuth();
@@ -15,11 +26,12 @@ const RegisterModal = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [company, setCompany] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const apiService = new ApiService('http://192.168.136.127:8000')
+    // const apiService = new ApiService(process.env.NEXT_PUBLIC_API_URL || 'http://192.168.136.127:8000')
 
     const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
@@ -38,20 +50,31 @@ const RegisterModal = () => {
         setError(null);
 
         try {
-            const response = await apiService.register(username, email, password);
+            const response = await axios.post<RegisterResponse>(
+                `${process.env.NEXT_PUBLIC_API_URL!}/auth/register`,
+                {
+                    username,
+                    company,
+                    email,
+                    password,
+                    // rememberMe,
+                }
+            );
 
             setUser({
                 id: response.data?.user?.id || '',
                 name: response.data?.user?.username || '',
-                email: response.data?.user?.email || ''
+                email: response.data?.user?.email || '',
+                company: response.data?.user?.company || ''
             });
 
             console.log("user:", response.data);
-            
+
 
             router.push('/kwgenerate');
             console.log('Registration successful', response.data);
         } catch (error) {
+            console.log(error)
             if (axios.isAxiosError(error) && error.response) {
                 setError(error.response.data.message || 'An error occurred during registration');
             } else {
@@ -68,7 +91,24 @@ const RegisterModal = () => {
                 <h2 className="text-[#1A1F36] text-left text-xl font-bold">新規登録</h2>
                 <form className="mt-4 text-[#1A1F36] space-y-4 " onSubmit={handleSubmit}>
                     <div>
-                        <label className="text-[14px] mb-2 block font-bold">ユーザー名</label>
+                        <label className="text-[14px] mb-2 block font-bold">会社名：</label>
+                        <div className="relative flex items-center">
+                            <input
+                                name="company"
+                                type="text"
+                                required
+                                className="w-full bg-[#F8F9F9] text-sm border border-[#D9DCE1] px-4 py-3 rounded-md outline-blue-600"
+                                placeholder="company name"
+                                value={company}
+                                onChange={(e) => (
+                                    setError(null),
+                                    setCompany(e.target.value)
+                                )}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="text-[14px] mb-2 block font-bold">担当者名：</label>
                         <div className="relative flex items-center">
                             <input
                                 name="username"
@@ -82,7 +122,7 @@ const RegisterModal = () => {
                         </div>
                     </div>
                     <div>
-                        <label className=" text-[14px] mb-2 block font-bold">メールアドレス</label>
+                        <label className=" text-[14px] mb-2 block font-bold">メアド：</label>
                         <div className="relative flex items-center">
                             <input
                                 name="email"
@@ -98,7 +138,7 @@ const RegisterModal = () => {
 
                     <div>
                         <div className="flex text-[14px] items-center justify-between">
-                            <label className=" text-sm mb-2 block font-bold">パスワード</label>
+                            <label className=" text-sm mb-2 block font-bold">パスワード：</label>
                         </div>
                         <div className="relative flex items-center">
                             <input
@@ -135,7 +175,7 @@ const RegisterModal = () => {
                 </form>
                 <button onClick={() => { }} className="w-full py-[7px] px-6 border-2 border-gray-300 rounded-lg transition duration-300 hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100 mt-4">
                     <div className="relative flex items-center justify-center">
-                        <img src="https://tailus.io/sources/blocks/social/preview/images/google.svg" className="absolute left-0 w-5" alt="google logo" />
+                        <Image src="https://tailus.io/sources/blocks/social/preview/images/google.svg" width={20} height={20} className="absolute left-0 w-5" alt="google logo" />
                         <span className="block w-max font-semibold tracking-wide text-gray-700 text-[14px] transition duration-300 group-hover:text-blue-600">Google で続ける</span>
                     </div>
                 </button>

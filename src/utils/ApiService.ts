@@ -21,6 +21,7 @@ interface RegisterResponse {
     id: string;
     email: string;
     username: string;
+    company: string;
   };
   token: string;
 }
@@ -79,8 +80,15 @@ class ApiService {
     return this.api.post<LoginResponse>('/auth/login', { email, password });
   }
 
-  async register(username: string, email: string, password: string): Promise<AxiosResponse<RegisterResponse>> {
-    return this.api.post<RegisterResponse>('/auth/register', { username, email, password });
+  async register(username: string, email: string, password: string, company: string): Promise<AxiosResponse<RegisterResponse>> {
+    return this.api.post<RegisterResponse>('/auth/register', { username, email, password, company });
+  }
+
+  async createKeywords(selectedKeywordsArray: string[]): Promise<Keyword[]> {
+    const response: AxiosResponse<Keyword[]> = await this.api.post('/keyword/create', {
+      data: selectedKeywordsArray,
+    });
+    return response.data;
   }
 
   async verifyPayment(sessionId: string) {

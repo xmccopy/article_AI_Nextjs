@@ -2,13 +2,12 @@
 
 import Button from "./Button";
 import { IoFilter } from "react-icons/io5";
-import { FaEllipsisVertical } from "react-icons/fa6"
+import { FaEllipsisVertical } from "react-icons/fa6";
 import { useCallback, useEffect, useState } from "react";
 import Filter from "./modals/Filter";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
 import Credit from "./modals/Credit";
-import SpinSetting from "./Spin";
 import { FaStar } from "react-icons/fa";
 
 interface Keyword {
@@ -16,15 +15,17 @@ interface Keyword {
     keyword: string;
     volume: string;
     status: string;
+    selected: boolean; // Add selected property
 }
 
-const statusKw = () => {
+const SavedKw = () => {
     const router = useRouter();
     const [filterShow, setFilterShow] = useState(false);
     const [keywords, setKeywords] = useState<Keyword[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
+    const [selectAll, setSelectAll] = useState(false); // State for "select all" checkbox
 
     const toggleShow = useCallback(() => {
         setFilterShow(filterShow => !filterShow);
@@ -82,6 +83,17 @@ const statusKw = () => {
         router.push(`/setting?keyword=${encodeURIComponent(keyword.keyword)}`);
     };
 
+    const handleSelectAll = () => {
+        const newSelectAll = !selectAll;
+        setSelectAll(newSelectAll);
+        setKeywords(keywords.map(keyword => ({ ...keyword, selected: newSelectAll })));
+    };
+
+    const handleCheckboxChange = (id: number) => {
+        setKeywords(keywords.map(keyword =>
+            keyword.id === id ? { ...keyword, selected: !keyword.selected } : keyword
+        ));
+    };
 
     useEffect(() => {
         const fetchKeywords = async () => {
@@ -91,16 +103,18 @@ const statusKw = () => {
                 if (!token) {
                     throw new Error('No authentication token found');
                 }
-    
-                const response = await axios.get('http://192.168.136.127:8000/keyword', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-    
+
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL!}/keyword`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
                 console.log("keyword", response.data);
-                setKeywords(response.data);
+                setKeywords(response.data.map((keyword: Keyword) => ({ ...keyword, selected: false })));
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.log("Failed to fetch keywords:", error.response?.data || error.message);
@@ -111,7 +125,7 @@ const statusKw = () => {
                 setIsLoading(false);
             }
         };
-    
+
         fetchKeywords();
     }, []);
 
@@ -128,13 +142,18 @@ const statusKw = () => {
                     <thead className="bg-white text-left p-2">
                         <tr>
                             <th className=" px-8 py-3 font-bold text-gray-900 text-xs text-left w-[4%]">
-                                <input type="checkbox" id="SelectAll" className="size-5 rounded border-gray-300" />
+                                <input
+                                    type="checkbox"
+                                    id="SelectAll"
+                                    className="size-5 rounded border-gray-300"
+                                    checked={selectAll}
+                                    onChange={handleSelectAll}
+                                />
                             </th>
                             <th className="whitespace-nowrap px-8 py-2">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">キーワード</p>
                                     <IoFilter onClick={toggleShow} className="cursor-pointer" />
-
                                 </div>
                             </th>
                             <th className="whitespace-nowrap px-8 py-2">
@@ -157,24 +176,30 @@ const statusKw = () => {
                         {keywords.map((keyword) => (
                             <tr key={keyword.id}>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
-                                    <input type="checkbox" id={`Select${keyword.id}`} className="size-5 rounded border-gray-300" />
+                                    <input
+                                        type="checkbox"
+                                        id={`Select${keyword.id}`}
+                                        className="size-5 rounded border-gray-300"
+                                        checked={keyword.selected}
+                                        onChange={() => handleCheckboxChange(keyword.id)}
+                                    />
                                 </td>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
                                 <td className="whitespace-nowrap flex items-center justify-center py-2">
-                                    <Button 
-                                        onClick={() => { }} 
-                                        outline 
-                                        roundBtn 
-                                        className={getStatusStyle(keyword.status)} 
-                                        label={getStatusLabel(keyword.status)} 
+                                    <Button
+                                        onClick={() => { }}
+                                        outline
+                                        roundBtn
+                                        className={getStatusStyle(keyword.status)}
+                                        label={getStatusLabel(keyword.status)}
                                     />
                                 </td>
                                 <td className="whitespace-nowrap py-2 ml-8">
                                     <div className="flex justify-around items-center">
-                                        <Button 
+                                        <Button
                                             className="custom-class"
-                                            onClick={() => {handleButtonClick(keyword)}} 
+                                            onClick={() => { handleButtonClick(keyword) }}
                                             common
                                             disabled={false}
                                             isLoading={false}
@@ -190,7 +215,7 @@ const statusKw = () => {
                 </table>
             </div>
         </>
-    )
+    );
 }
 
-export default statusKw;
+export default SavedKw;

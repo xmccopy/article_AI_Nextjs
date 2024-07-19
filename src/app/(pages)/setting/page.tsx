@@ -22,7 +22,18 @@ interface SubKeyword {
   text: string;
   selected: boolean;
 }
+interface Subtitle {
+  tag: string;
+  text: string;
+  id: string; // Add an id field
+}
 
+interface Config {
+  tag: string;
+  text: string;
+  subtitles: Subtitle[];
+  id: string; // Add an id field
+}
 
 const Home = () => {
 
@@ -37,6 +48,7 @@ const Home = () => {
   const [subKeywords, setSubKeywords] = useState<SubKeyword[]>([]);
   const [articleId, setArticleId] = useState<string | null>(null);
   const [generateTitles, setGenerateTitles] = useState<string[]>([]);
+  const [finalConfig, setFinalConfig] = useState<Config[]>([]);
   const [finalTitle, setFinalTitle] = useState('');
 
   const configdes = [
@@ -97,7 +109,7 @@ const Home = () => {
       }
 
       const response = await axios.post(
-        "http://192.168.136.127:8000/article",
+        `${process.env.NEXT_PUBLIC_API_URL!}/article`,
         { keyword: `"${keyword}"` },
         {
           headers: {
@@ -135,7 +147,7 @@ const Home = () => {
       }
 
       const response = await axios.patch(
-        `http://192.168.136.127:8000/article/title/${articleId}`,
+        `${process.env.NEXT_PUBLIC_API_URL!}/article/title/${articleId}`,
         { subkeywords: subKeywords },
         {
           headers: {
@@ -175,9 +187,14 @@ const Home = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
+      if (!articleId) {
+        console.log("asdfdsafdsafsadfdsaf");
+        
+        throw new Error('Article ID is missing');
+      }
 
-      const response = await axios.post(
-        `http://192.168.136.127:8000/article/config/${articleId}`,
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article/config/${articleId}`,
         { title: finalTitle },
         {
           headers: {
@@ -187,11 +204,11 @@ const Home = () => {
         }
       );
 
-      console.log("Updated article:", response.data);
+      console.log("Updated article:", response.data.configuration);
 
       // Assuming the API returns generated titles
       if (response.data) {
-        setGenerateTitles(response.data);
+        setFinalConfig(response.data.configuration);
       }
 
       setTitleFinalGenerationLimit(prev => Math.max(0, prev - 1));
@@ -312,7 +329,7 @@ const Home = () => {
         </form>
 
         <SubTitle order="2" label="タイトルを設定してください" sublabel="" />
-        <form action="" className="text-[#3C4257]">
+        <div className="text-[#3C4257]">
           <p className="text-[14px] mb-3 font-medium">タイトル案</p>
           <TitleContainer
             generateTitles={generateTitles}
@@ -338,14 +355,14 @@ const Home = () => {
               }
             </p>
           </div>
-        </form>
+        </div>
 
         <SubTitle order="3" label="記事構成を作成してください" sublabel="" />
         <div className="flex sm:flex-row flex-col">
           <FinalSet
             keyword={keyword}
-            subkeyword="アットコスメ"
-            title="シミが消える？〜〜〜〜〜"
+            subkeyword={subKeywords}
+            title={finalTitle}
           />
           <div className="w-full sm:pl-4 mt-4 sm:mt-0">
             <p className="text-[14px] mb-4">記事構成</p>
@@ -359,7 +376,7 @@ const Home = () => {
                   </tr>
                 </thead>
               </table>
-              <ConfigManager initialConfigs={configdes} />
+              <ConfigManager initialConfigs={finalConfig} />
             </div>
           </div>
         </div>
