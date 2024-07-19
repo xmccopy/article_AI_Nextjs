@@ -12,6 +12,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation"
 import { useAuth } from "./AuthContext";
 import { RiLogoutBoxRLine } from "react-icons/ri";
+import Button from "../Button";
 
 interface SideBarProps {
     showSidebar: boolean;
@@ -23,6 +24,10 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
     const router = useRouter();
     const pathname = usePathname();
     const [activeButton, setActiveButton] = useState<string>('');
+
+    const paymentPlan = () => {
+        router.push('/payment')
+    }
 
     useEffect(() => {
         if (pathname === '/kwgenerate') setActiveButton('kwgenerate');
@@ -62,19 +67,19 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                                 <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">キーワード</p>
                             </li>
                             <li>
-                                <SideBtn 
-                                    icon={<CiPen size={24} />} 
-                                    onClick={() => handleNavigation('/kwgenerate', 'kwgenerate')} 
+                                <SideBtn
+                                    icon={<CiPen size={24} />}
+                                    onClick={() => handleNavigation('/kwgenerate', 'kwgenerate')}
                                     label="キーワード生成"
                                     isActive={activeButton === 'kwgenerate'}
                                 />
                             </li>
                             <li>
-                                <SideBtn 
-                                    icon={<AiOutlineSave size={24} />} 
-                                    onClick={() => handleNavigation('/savedkw', 'savedkw')} 
+                                <SideBtn
+                                    icon={<AiOutlineSave size={24} />}
+                                    onClick={() => handleNavigation('/savedkw', 'savedkw')}
                                     isActive={activeButton === 'savedkw'}
-                                    label="保存キーワード" 
+                                    label="保存キーワード"
                                 />
                             </li>
                         </ul>
@@ -83,19 +88,19 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                                 <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">記 事</p>
                             </li>
                             <li>
-                                <SideBtn 
-                                    icon={<HiOutlineCommandLine size={24} />} 
-                                    onClick={() => handleNavigation('/setting', 'setting')} 
+                                <SideBtn
+                                    icon={<HiOutlineCommandLine size={24} />}
+                                    onClick={() => handleNavigation('/setting', 'setting')}
                                     isActive={activeButton === 'setting'}
-                                    label="記事生成" 
+                                    label="記事生成"
                                 />
                             </li>
                             <li>
-                                <SideBtn 
+                                <SideBtn
                                     icon={<VscListUnordered size={24} />}
-                                    onClick={() => handleNavigation('/savedarticle', 'savedarticle')} 
+                                    onClick={() => handleNavigation('/savedarticle', 'savedarticle')}
                                     isActive={activeButton === 'savedarticle'}
-                                    label="保存した記事" 
+                                    label="保存した記事"
                                 />
                             </li>
                         </ul>
@@ -105,11 +110,11 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                             </li>
                             <li>
                                 <a className="" href="#">
-                                    <SideBtn 
-                                    icon={<CiSettings size={24} />} 
-                                    onClick={() => handleNavigation('/apiconnect', 'apiconnect')} 
-                                    isActive={activeButton === 'apiconnect'}
-                                    label="API連携" 
+                                    <SideBtn
+                                        icon={<CiSettings size={24} />}
+                                        onClick={() => handleNavigation('/apiconnect', 'apiconnect')}
+                                        isActive={activeButton === 'apiconnect'}
+                                        label="API連携"
                                     />
                                 </a>
                             </li>
@@ -121,13 +126,15 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                         <div className="xl:p-4 xl:mx-0 p-4 mx-2 bg-white rounded-[12px] flex flex-col gap-6">
                             <p className="text-base font-bold">スタータープラン</p>
                             <Progress />
-                            <button
-                                type="button"
-                                className="w-full font-bold flex justify-center gap-1 items-center py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-[#628CF8] hover:bg-[#9cb6f8] active:bg-[#628CF8] focus:outline-none"
-                            >
-                                <p>アップグレード</p>
-                                <FaCrown size={20} color="yellow" />
-                            </button>
+                            <Button
+                                className="custom-class"
+                                onClick={paymentPlan}
+                                common
+                                disabled={false}
+                                isLoading={false}
+                                label="アップグレード"
+                                icon={FaCrown}
+                            />
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="flex gap-2">
@@ -137,8 +144,8 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                                     <p className="text-[14px]">{user?.email}</p>
                                 </div>
                             </div>
-                            <RiLogoutBoxRLine 
-                                size={25} 
+                            <RiLogoutBoxRLine
+                                size={25}
                                 className="opacity-60 cursor-pointer mr-1"
                                 onClick={logout}
                             />

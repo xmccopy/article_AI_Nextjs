@@ -6,15 +6,7 @@ import { PiEyeThin, PiEyeSlashThin } from "react-icons/pi";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useAuth } from "../sidebar/AuthContext";
-
-interface RegisterResponse {
-    user: {
-        id: string;
-        email: string;
-        username: string;
-    };
-    token: string;
-}
+import ApiService from "@/utils/ApiService";
 
 const RegisterModal = () => {
     const { setUser } = useAuth();
@@ -26,6 +18,8 @@ const RegisterModal = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const apiService = new ApiService('http://192.168.136.127:8000')
 
     const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
@@ -44,14 +38,7 @@ const RegisterModal = () => {
         setError(null);
 
         try {
-            const response = await axios.post<RegisterResponse>(
-                'http://192.168.136.127:8000/auth/register',
-                {
-                    username,
-                    email,
-                    password,
-                }
-            );
+            const response = await apiService.register(username, email, password);
 
             setUser({
                 id: response.data?.user?.id || '',
