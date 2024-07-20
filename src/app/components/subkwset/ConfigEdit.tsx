@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 import { useState } from "react";
-import { FaPencilAlt } from "react-icons/fa"
+import { FaPencilAlt } from "react-icons/fa";
 import InputWindow from "./InputWindow";
 
 interface ConfigEditProps {
-  configcontent: string;
+    configcontent: string;
 }
 
 const ConfigEdit: React.FC<ConfigEditProps> = ({ configcontent }) => {
@@ -40,7 +40,7 @@ const ConfigEdit: React.FC<ConfigEditProps> = ({ configcontent }) => {
                 <FaPencilAlt onClick={handleActivate} className="cursor-pointer" />
             </td>
         </tr>
-    )
-}
+    );
+};
 
 export default ConfigEdit;

@@ -15,6 +15,7 @@ interface RegisterResponse {
         email: string;
         username: string;
         company: string;
+        credits: number;
     };
     token: string;
 }
@@ -63,16 +64,12 @@ const RegisterModal = () => {
 
             setUser({
                 id: response.data?.user?.id || '',
-                name: response.data?.user?.username || '',
+                username: response.data?.user?.username || '',
                 email: response.data?.user?.email || '',
-                company: response.data?.user?.company || ''
+                company: response.data?.user?.company || '',
+                credits: response.data?.user?.credits
             });
-
-            console.log("user:", response.data);
-
-
-            router.push('/kwgenerate');
-            console.log('Registration successful', response.data);
+            router.push('/login');
         } catch (error) {
             console.log(error)
             if (axios.isAxiosError(error) && error.response) {

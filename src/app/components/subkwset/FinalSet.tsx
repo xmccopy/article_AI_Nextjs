@@ -13,7 +13,7 @@ interface SubKeyword {
 
 const FinalSet: React.FC<FinalSetProps> = ({
     keyword,
-    subkeyword,
+    subkeyword = [],
     title
 }) => {
     return (

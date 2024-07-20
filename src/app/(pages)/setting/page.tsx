@@ -40,56 +40,59 @@ const Home = () => {
   const searchParams = useSearchParams();
   const [newKeyword, setNewKeyword] = useState('')
   const [keyword, setKeyword] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setBtnIsLoading] = useState(false);
   const [isBtnTitleLoading, setBtnTitleIsLoading] = useState(false);
+  const [isArticleEndLoading, setIsArticleEndLoading] = useState(false);
+
   const [titleGenerationLimit, setTitleGenerationLimit] = useState(3);
   const [titleFinalGenerationLimit, setTitleFinalGenerationLimit] = useState(3);
+
   const [subKeywords, setSubKeywords] = useState<SubKeyword[]>([]);
   const [articleId, setArticleId] = useState<string | null>(null);
   const [generateTitles, setGenerateTitles] = useState<string[]>([]);
   const [finalConfig, setFinalConfig] = useState<Config[]>([]);
   const [finalTitle, setFinalTitle] = useState('');
 
-  const configdes = [
-    {
-      id: "config1",
-      tag: "h2",
-      text: "The first h2 tag title",
-      subtitles: [
-        { id: "subtitle1-1", tag: "h3", text: "h3 tags title 1-1" },
-        { id: "subtitle1-2", tag: "h3", text: "h3 tags title 1-2" },
-        { id: "subtitle1-3", tag: "h3", text: "h3 tags title 1-3" },
-        { id: "subtitle1-4", tag: "h3", text: "h3 tags title 1-4" },
-      ],
-    },
-    {
-      id: "config2",
-      tag: "h2",
-      text: "The second h2 tag title",
-      subtitles: [
-        { id: "subtitle2-1", tag: "h3", text: "h3 tags title 2-1" },
-        { id: "subtitle2-2", tag: "h3", text: "h3 tags title 2-2" },
-        { id: "subtitle2-4", tag: "h3", text: "h3 tags title 2-3" },
-      ],
-    },
-    {
-      id: "config3",
-      tag: "h2",
-      text: "The third h2 tag title",
-      subtitles: [
-        { id: "subtitle3-1", tag: "h3", text: "h3 tags title 3-1" },
-        { id: "subtitle3-2", tag: "h3", text: "h3 tags title 3-2" },
-      ],
-    },
-  ];
-
-
   const route = useRouter();
 
-  const handlearticleend = () => {
-    route.push('/setting/article-end')
-  }
+  const handleArticleEnd = async () => {
+    setIsArticleEndLoading(true);
+    if (!articleId) {
+      console.error('Article ID is missing');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article/content/${articleId}`,
+        { config: finalConfig },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      route.push('/setting/article-end');
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to update article content:", error.response?.data || error.message);
+      } else {
+        console.error("Failed to update article content:", error);
+      }
+    } finally {
+      setIsArticleEndLoading(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewKeyword(e.target.value);
@@ -120,6 +123,9 @@ const Home = () => {
       );
 
       console.log("SubKeywords: ", response.data.id);
+
+      localStorage.setItem('articleId',response.data.id);
+
       setArticleId(response.data.id);
       setSubKeywords(response.data.subKeywords);
     } catch (error) {
@@ -189,7 +195,7 @@ const Home = () => {
       }
       if (!articleId) {
         console.log("asdfdsafdsafsadfdsaf");
-        
+
         throw new Error('Article ID is missing');
       }
 
@@ -224,7 +230,7 @@ const Home = () => {
   };
   //function to check if any subkeywords are selected
   const isAnySubKeywordSelected = () => {
-    return subKeywords.some(kw => kw.selected);
+    return Array.isArray(subKeywords) && subKeywords.some(kw => kw.selected);
   }
 
   const isButtonDisabled = () => {
@@ -278,14 +284,18 @@ const Home = () => {
                     サブキーワード 生成中...
                   </div>
                 ) : (
-                  subKeywords.map((subKeyword, index) => (
-                    <SubKwSetting
-                      key={index}
-                      label={subKeyword.text}
-                      selected={subKeyword.selected}
-                      onChange={() => toggleSubKeyword(index)}
-                    />
-                  ))
+                  Array.isArray(subKeywords) && subKeywords.length > 0 ? (
+                    subKeywords.map((subKeyword, index) => (
+                      <SubKwSetting
+                        key={index}
+                        label={subKeyword.text}
+                        selected={subKeyword.selected}
+                        onChange={() => toggleSubKeyword(index)}
+                      />
+                    ))
+                  ) : (
+                    <div>サブキーワードがありません。</div>
+                  )
                 )}
               </div>
               <div className="flex gap-4 mt-4">
@@ -383,9 +393,10 @@ const Home = () => {
         <div className="flex sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
           <Button
             className="custom-class"
-            onClick={handlearticleend}
+            onClick={handleArticleEnd}
             common
             label="記事を生成する"
+            isLoading={isArticleEndLoading}
           />
         </div>
       </div>

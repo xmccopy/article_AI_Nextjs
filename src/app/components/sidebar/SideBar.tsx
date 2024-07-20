@@ -140,7 +140,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                             <div className="flex gap-2">
                                 <Avatar />
                                 <div className="flex flex-col items-center justify-between">
-                                    <p className="text-base">{user?.name}</p>
+                                    <p className="text-base">{user?.username}</p>
                                     <p className="text-[14px]">{user?.email}</p>
                                 </div>
                             </div>

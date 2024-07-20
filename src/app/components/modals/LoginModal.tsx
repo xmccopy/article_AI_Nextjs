@@ -15,6 +15,7 @@ interface LoginResponse {
         id: string;
         email: string;
         username: string;
+        credits: number;
     };
     backendTokens: {
         accessToken: string;
@@ -92,15 +93,17 @@ const LoginModal = () => {
 
             // Save the accessToken to localStorage
             localStorage.setItem('token', accessToken);
+            localStorage.setItem('userId', response.data?.user?.id);
 
             // Redirect to the desired page after successful login
             router.push('/kwgenerate');
 
             setUser({
                 id: response.data?.user?.id || '',
-                name: response.data?.user?.username || '',
+                username: response.data?.user?.username || '',
                 email: response.data?.user?.email || '',
-                company: response.data?.user?.email || ''
+                company: response.data?.user?.email || '',
+                credits: response.data?.user?.credits
             });
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

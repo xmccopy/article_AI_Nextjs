@@ -1,13 +1,14 @@
 'use client'
 
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useState, useEffect, useContext } from 'react';
-
 interface User {
     id: string;
-    name: string;
+    username: string;
     email: string;
     company: string;
+    credits: number;
 }
 
 interface AuthContextType {
@@ -15,6 +16,7 @@ interface AuthContextType {
     setUser: (user: User | null) => void;
     logout: () => void;
     isLoading: boolean;
+    updateCredits: (newCredits: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,12 +29,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         const checkUser = async () => {
             const storedUser = localStorage.getItem('user');
+            console.log("------------------", storedUser);
+
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
             }
             setIsLoading(false);
         };
         checkUser();
+    }, []);
+
+    const updateCredits = (newCredits: number) => {
+        setUser(prevUser => prevUser ? { ...prevUser, credits: newCredits } : null);
+    };
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const userId = localStorage.getItem('userId');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL!}/user/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                setUser(response.data);
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+            }
+        };
+
+        fetchUser();
     }, []);
 
     useEffect(() => {
@@ -58,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     return (
-        <AuthContext.Provider value={{ user, setUser: setUserAndStore, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, setUser: setUserAndStore, logout, isLoading, updateCredits }}>
             {children}
         </AuthContext.Provider>
     );

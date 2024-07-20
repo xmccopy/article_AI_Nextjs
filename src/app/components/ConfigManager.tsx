@@ -1,21 +1,20 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from "react";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-import axios from 'axios';
 import ConfigList from "@/app/components/subkwset/ConfigList";
 
 interface Subtitle {
     tag: string;
     text: string;
-    id: string; // Add an id field
+    id: string;
 }
 
 interface Config {
     tag: string;
     text: string;
     subtitles: Subtitle[];
-    id: string; // Add an id field
+    id: string;
 }
 
 interface ConfigManagerProps {

@@ -61,7 +61,8 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
 
             console.log("data:", selectedKeywordsArray);
 
-            const response = await axios.post('http://192.168.136.127:8000/keyword/create',
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL!}/keyword/create`,
                 { data: selectedKeywordsArray },
                 {
                     headers: {
