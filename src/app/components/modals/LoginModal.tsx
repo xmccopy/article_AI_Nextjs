@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { useState, MouseEvent, FormEvent } from "react";
+import { signIn } from 'next-auth/react';
+import { useState, MouseEvent, FormEvent, useRef } from "react";
 import { PiEyeSlashThin, PiEyeThin } from "react-icons/pi";
 import axios from "axios";
 import { useAuth } from "../sidebar/AuthContext";
 import Image from "next/image";
-
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 interface LoginResponse {
     token: string;
     user: {
@@ -20,24 +22,20 @@ interface LoginResponse {
     backendTokens: {
         accessToken: string;
     }
-
-}
-
-interface LoginError {
-    message: string;
 }
 
 const LoginModal = () => {
     const { setUser } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter()
+    const router = useRouter();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // const [rememberMe, setRememberMe] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [loginError, setLoginError] = useState<string | null>(null);
+
+    const toast = useRef<Toast>(null);
 
     const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
@@ -52,14 +50,11 @@ const LoginModal = () => {
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         try {
-            await signIn('google',
-                {
-                    callbackUrl: '/kwgenerate',
-                    //Pass rememberMe as a custom parameter
-                    // rememberMe: rememberMe ? 'true' : 'false'
-                });
+            await signIn('google', {
+                callbackUrl: '/kwgenerate',
+            });
         } catch (error) {
-            setError('Failed to login with Google');
+            setLoginError('Failed to login with Google');
         } finally {
             setIsLoading(false);
         }
@@ -68,35 +63,18 @@ const LoginModal = () => {
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        setError(null);
+        setLoginError(null);
 
         try {
             const response = await axios.post<LoginResponse>(
                 `${process.env.NEXT_PUBLIC_API_URL!}/auth/login`,
-                {
-                    email,
-                    password,
-                    // rememberMe,
-                }
+                { email, password }
             );
 
-            console.log('Login successful', response.data);
-
-            // Store the token in localStorage or a secure cookie
-            // if (rememberMe) {
-            //     localStorage.setItem('token', response.data.token);
-            // } else {
-            //     sessionStorage.setItem('token', response.data.token);
-            // }
             const accessToken = response.data.backendTokens.accessToken;
-            console.log("accessToken", accessToken);
 
-            // Save the accessToken to localStorage
             localStorage.setItem('token', accessToken);
             localStorage.setItem('userId', response.data?.user?.id);
-
-            // Redirect to the desired page after successful login
-            router.push('/kwgenerate');
 
             setUser({
                 id: response.data?.user?.id || '',
@@ -105,11 +83,18 @@ const LoginModal = () => {
                 company: response.data?.user?.email || '',
                 credits: response.data?.user?.credits
             });
+
+            if (toast.current) {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!' });
+            }
+
+            router.push('/kwgenerate');
+
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
-                setError(error.response.data.message || 'An error occurred during login');
+                setLoginError(error.response.data.message || 'An error occurred during login');
             } else {
-                setError('An unexpected error occurred');
+                setLoginError('Server error occurred');
             }
         } finally {
             setIsLoading(false);
@@ -118,7 +103,7 @@ const LoginModal = () => {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            <div className="sm:w-[520px] h-full p-8 rounded-[16px]  bg-white">
+            <div className="sm:w-[520px] h-full p-8 rounded-[16px] bg-white">
                 <h2 className="text-[#1A1F36] text-left text-xl font-bold">ログイン</h2>
                 <form className="mt-4 text-[#1A1F36] space-y-4" onSubmit={handleLogin}>
                     <div>
@@ -141,7 +126,7 @@ const LoginModal = () => {
                         <div className="flex items-center justify-between">
                             <label className="text-[14px] mb-2 block font-bold">パスワード</label>
                             <div className="text-sm mb-2">
-                                <a href="jajvascript:void(0);" className="text-blue-600 hover:underline font-semibold">
+                                <a href="javascript:void(0);" className="text-blue-600 hover:underline font-semibold">
                                     パスワードをお忘れですか？
                                 </a>
                             </div>
@@ -166,6 +151,7 @@ const LoginModal = () => {
                                 {showPassword ? <PiEyeSlashThin className="w-4 h-4 absolute right-4 top-4 opacity-40" /> : <PiEyeThin className="w-4 h-4 absolute right-4 opacity-40 top-4" />}
                             </button>
                         </div>
+                        {loginError && <div className="text-red-500 text-sm mt-2">{loginError}</div>}
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-4">
@@ -174,8 +160,6 @@ const LoginModal = () => {
                                 id="remember-me"
                                 name="remember-me"
                                 type="checkbox"
-                                // checked={rememberMe}
-                                // onChange={(e) => setRememberMe(e.target.checked)}
                                 className="h-4 w-4 shrink-0 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                             />
                             <label className="ml-3 block text-sm text-gray-800">
@@ -190,7 +174,7 @@ const LoginModal = () => {
                             disabled={isLoading}
                             className="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                         >
-                            {isLoading ? "'処理中..." : "パスワード"}
+                            {isLoading ? "'処理中..." : "ログイン"}
                         </button>
                     </div>
                 </form>
@@ -208,7 +192,7 @@ const LoginModal = () => {
                 </p>
             </div>
         </div>
-    )
+    );
 }
 
 export default LoginModal;

@@ -1,14 +1,15 @@
 'use client'
 
 import Link from "next/link";
-import { useState, MouseEvent, FormEvent } from "react";
+import { useState, MouseEvent, FormEvent, useRef } from "react";
 import { PiEyeThin, PiEyeSlashThin } from "react-icons/pi";
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useAuth } from "../sidebar/AuthContext";
-import ApiService from "@/utils/ApiService";
 import Image from "next/image";
-
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 interface RegisterResponse {
     user: {
         id: string;
@@ -31,6 +32,8 @@ const RegisterModal = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const toast = useRef<Toast>(null);
 
     // const apiService = new ApiService(process.env.NEXT_PUBLIC_API_URL || 'http://192.168.136.127:8000')
 
@@ -69,11 +72,17 @@ const RegisterModal = () => {
                 company: response.data?.user?.company || '',
                 credits: response.data?.user?.credits
             });
-            router.push('/login');
+
+            toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 3000 });
+
+            setTimeout(() => {
+                router.push('/login')
+            }, 2000)
         } catch (error) {
             console.log(error)
             if (axios.isAxiosError(error) && error.response) {
                 setError(error.response.data.message || 'An error occurred during registration');
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response.data.message || 'An error occurred during registration', life: 3000 });
             } else {
                 setError('An unexpected error occurred');
             }
@@ -114,7 +123,10 @@ const RegisterModal = () => {
                                 className="w-full bg-[#F8F9F9] text-sm border border-[#D9DCE1] px-4 py-3 rounded-md outline-blue-600"
                                 placeholder="User Name"
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onChange={(e) => (
+                                    setError(null),
+                                    setUsername(e.target.value)
+                                )}
                             />
                         </div>
                     </div>
@@ -128,7 +140,10 @@ const RegisterModal = () => {
                                 className="w-full bg-[#F8F9F9] text-sm border border-[#D9DCE1] px-4 py-3 rounded-md outline-blue-600"
                                 placeholder="example@example.com"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => (
+                                    setError(null),
+                                    setEmail(e.target.value)
+                                )}
                             />
                         </div>
                     </div>
