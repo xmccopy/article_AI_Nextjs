@@ -49,15 +49,7 @@ const LoginModal = () => {
 
     const handleGoogleLogin = async () => {
         setIsLoading(true);
-        try {
-            await signIn('google', {
-                callbackUrl: '/kwgenerate',
-            });
-        } catch (error) {
-            setLoginError('Failed to login with Google');
-        } finally {
-            setIsLoading(false);
-        }
+        router.push(`${process.env.NEXT_PUBLIC_API_URL!}/auth/google`)
     };
 
     const handleLogin = async (e: FormEvent) => {

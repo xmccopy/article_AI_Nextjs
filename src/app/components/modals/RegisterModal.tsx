@@ -41,6 +41,11 @@ const RegisterModal = () => {
         e.preventDefault();
         setShowPassword(true);
     };
+    
+    const handleGoogleLogin = async () => {
+        setIsLoading(true);
+        router.push(`${process.env.NEXT_PUBLIC_API_URL!}/auth/google`)
+    };
 
     const handleMouseUp = (e: MouseEvent) => {
         e.preventDefault();
