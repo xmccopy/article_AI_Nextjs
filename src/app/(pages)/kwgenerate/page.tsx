@@ -1,13 +1,14 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import SubTitle from "@/app/components/SubTitle";
 import Container from "@/app/components/Container";
 import KwTable from "@/app/components/KwTable";
 import Title from "@/app/components/Title";
 import CustomTextarea from "@/app/components/CustomTextarea";
 import withAuth from "@/app/components/withAuth";
-import { useRouter, useSearchParams } from "next/navigation";
+
 interface Keyword {
   text: string;
   volume: string;
@@ -19,17 +20,19 @@ const Home: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleKeywordsGenerated = (newKeywords: Keyword[]) => {
-    setKeywords(newKeywords);
-  }
-
   useEffect(() => {
     const token = searchParams.get('token');
     if (token) {
       localStorage.setItem('token', token);
-      window.history.replaceState({}, document.title, "/kwgenerate");
+      // Optionally, remove the token from the URL
+      // window.history.replaceState({}, document.title, "/kwgenerate");
+      router.push('/kwgenerate');
     }
-  },[searchParams])
+  }, [searchParams]);
+
+  const handleKeywordsGenerated = (newKeywords: Keyword[]) => {
+    setKeywords(newKeywords);
+  }
 
   return (
     <Container>
