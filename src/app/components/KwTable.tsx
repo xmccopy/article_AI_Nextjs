@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "./Button";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import SelectTag from "./subkwset/SelectTag";
+
 interface Keyword {
     text: string;
     volume: string;
@@ -19,10 +21,17 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [keywords, setKeywords] = useState<Keyword[]>(initialKeywords);
     const [selectedKeywords, setSelectedKeywords] = useState<Set<number>>(new Set());
+    const [currentPage, setCurrentPage] = useState(1);
+    const [selectKeywordsPerPage, setSelectKeywordsPerPage] = useState(10);
+    const keywordsPerPage = selectKeywordsPerPage;
 
     useEffect(() => {
         setKeywords(initialKeywords);
     }, [initialKeywords]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectKeywordsPerPage])
 
     const toggleKeyword = (index: number) => {
         setSelectedKeywords(prev => {
@@ -53,13 +62,10 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                 throw new Error('No authentication token found');
             }
 
-            // Convert selected keywords to an array of objects
             const selectedKeywordsArray = Array.from(selectedKeywords).map(index => ({
                 keyword: keywords[index].text,
                 volume: keywords[index].volume,
             }));
-
-            console.log("data:", selectedKeywordsArray);
 
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL!}/keyword/create`,
@@ -72,27 +78,26 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                 }
             );
 
-            console.log("Saved keywords:", response.data);
-
-            // Update local state to reflect saved keywords
             setKeywords(prev => prev.map((kw, index) =>
                 selectedKeywords.has(index) ? { ...kw, saved: 1 } : kw
             ));
             setSelectedKeywords(new Set());
-
-            // Navigate to the saved keywords page
             router.push('/savedkw');
         } catch (error) {
             console.error("Failed to store keywords:", error);
-            // Handle error (e.g., show error message to user)
         } finally {
             setIsLoading(false);
         }
-
     };
 
+    const indexOfLastKeyword = currentPage * keywordsPerPage;
+    const indexOfFirstKeyword = indexOfLastKeyword - keywordsPerPage;
+    const currentKeywords = keywords.slice(indexOfFirstKeyword, indexOfLastKeyword);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
     return (
-        <div className="w-full flex flex-col gap-5">
+        <div className="w-full flex flex-col gap-5 ">
             <div className="overflow-x-auto rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
@@ -106,21 +111,22 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                                     onChange={toggleAllKeywords}
                                 />
                             </th>
-                            <th className="whitespace-nowrap px-8 py-3 w-[40%] font-bold text-gray-900 text-xs text-left">キーワード</th>
+                            <th className=" whitespace-nowrap px-8 py-3 w-[40%] font-bold text-gray-900 text-xs text-left">キーワード</th>
                             <th className="whitespace-nowrap px-8 py-3 w-[20%] font-bold text-gray-900 text-xs text-left">ボリューム</th>
                             <th className="whitespace-nowrap py-3 w-[36%] font-bold text-gray-900 text-xs text-left">ステータス</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200 bg-gray-100">
-                        {keywords.map((keyword, index) => (
+                    <tbody className=" divide-gray-200 bg-gray-100 ">
+                        {/* {currentKeywords &&} */}
+                        {currentKeywords.map((keyword, index) => (
                             <tr key={index}>
                                 <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">
                                     <input
                                         type="checkbox"
                                         disabled={keyword.saved === 1}
-                                        checked={selectedKeywords.has(index)}
-                                        onChange={() => toggleKeyword(index)}
-                                        id={`Select${index}`}
+                                        checked={selectedKeywords.has(indexOfFirstKeyword + index)}
+                                        onChange={() => toggleKeyword(indexOfFirstKeyword + index)}
+                                        id={`Select${indexOfFirstKeyword + index}`}
                                         className="size-5 rounded border-gray-300"
                                     />
                                 </td>
@@ -141,6 +147,20 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                 </table>
             </div>
             <div className="flex justify-end">
+                <div className="flex justify-center items-center sm:mr-20">
+                    {Array.from({ length: Math.ceil(keywords.length / keywordsPerPage) }, (_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => paginate(i + 1)}
+                            className={`rounded-md px-4 py-2 mx-1 border ${currentPage === i + 1 ? 'bg-[#5469D4] text-white' : 'bg-white text-black'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                    {currentKeywords.length > 0 ? (
+                        <SelectTag setSelectKeywordsPerPage={setSelectKeywordsPerPage} />
+                    ) : ''}
+                </div>
                 <Button
                     className="custom-class"
                     onClick={handleGenerate}

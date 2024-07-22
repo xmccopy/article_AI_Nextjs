@@ -8,7 +8,6 @@ import SubKwSetting from "@/app/components/subkwset/subkwset";
 import Button from "@/app/components/Button";
 import FinalSet from "@/app/components/subkwset/FinalSet"
 import TitleContainer from "../../components/subkwset/TitleContainer";
-import ConfigList from "../../components/subkwset/ConfigList";
 import axios from 'axios';
 import SubTitle from "@/app/components/SubTitle";
 
@@ -39,7 +38,7 @@ const Home = () => {
 
   const searchParams = useSearchParams();
   const [newKeyword, setNewKeyword] = useState('')
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyowrd] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setBtnIsLoading] = useState(false);
@@ -50,7 +49,7 @@ const Home = () => {
   const [titleFinalGenerationLimit, setTitleFinalGenerationLimit] = useState(3);
 
   const [subKeywords, setSubKeywords] = useState<SubKeyword[]>([]);
-  const [articleId, setArticleId] = useState<string | null>(null);
+  const [articleId, setArticleId] = useState('');
   const [generateTitles, setGenerateTitles] = useState<string[]>([]);
   const [finalConfig, setFinalConfig] = useState<Config[]>([]);
   const [finalTitle, setFinalTitle] = useState('');
@@ -102,8 +101,8 @@ const Home = () => {
     return titleFinalGenerationLimit <= 0 || finalTitle.trim() === '';
   }, [titleFinalGenerationLimit, finalTitle]);
 
-  const fetchSubKeywords = useCallback(async (keyword: string) => {
-    if (!keyword) return;
+  const fetchSubKeywords = useCallback(async (articleId: string) => {
+    if (!articleId) return;
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -111,9 +110,8 @@ const Home = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL!}/article`,
-        { keyword: `"${keyword}"` },
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -122,12 +120,12 @@ const Home = () => {
         }
       );
 
-      console.log("SubKeywords: ", response.data.id);
 
       localStorage.setItem('articleId',response.data.id);
 
-      setArticleId(response.data.id);
-      setSubKeywords(response.data.subKeywords);
+      setArticleId(response.data?.id);
+      setKeyowrd(response.data?.keyword);
+      setSubKeywords(response.data?.subKeywords);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Failed to fetch subkeywords:", error.response?.data || error.message);
@@ -169,7 +167,6 @@ const Home = () => {
 
       setTitleGenerationLimit(prev => Math.max(0, prev - 1));
 
-      console.log("Updated article:", response.data);
       // You might want to show a success message here
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -187,15 +184,12 @@ const Home = () => {
     if (titleFinalGenerationLimit <= 0) return;
 
     setBtnTitleIsLoading(true);
-    console.log(finalTitle)
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
       if (!articleId) {
-        console.log("asdfdsafdsafsadfdsaf");
-
         throw new Error('Article ID is missing');
       }
 
@@ -209,8 +203,6 @@ const Home = () => {
           }
         }
       );
-
-      console.log("Updated article:", response.data.configuration);
 
       // Assuming the API returns generated titles
       if (response.data) {
@@ -252,12 +244,12 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchSubKeywords(keyword);
-  }, [keyword, fetchSubKeywords]);
+    fetchSubKeywords(articleId);
+  }, [articleId, fetchSubKeywords]);
 
   useEffect(() => {
-    const keywordParam = searchParams.get('keyword');
-    if (keywordParam) setKeyword(keywordParam);
+    const articleIdParam = searchParams.get('articleId');
+    if (articleIdParam) setArticleId(articleIdParam);
   }, [searchParams]);
 
   return (

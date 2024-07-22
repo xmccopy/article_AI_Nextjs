@@ -61,7 +61,6 @@ const CustomTextarea: React.FC<CustomTextareaProps> = ({ onKeywordsGenerated }) 
       const response = await apiService.generateKeywords(tags);
 
       const newKeywords = response.data;
-      console.log("ads response: ", newKeywords);
       setKeywords(newKeywords);
       onKeywordsGenerated(newKeywords);
     } catch (error) {

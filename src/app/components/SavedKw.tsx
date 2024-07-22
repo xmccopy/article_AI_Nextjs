@@ -11,7 +11,7 @@ import Credit from "./modals/Credit";
 import { FaStar } from "react-icons/fa";
 
 interface Keyword {
-    id: number;
+    id: string;
     keyword: string;
     volume: string;
     status: string;
@@ -26,6 +26,7 @@ const SavedKw = () => {
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
     const [selectAll, setSelectAll] = useState(false); // State for "select all" checkbox
+    const [articleId, setArticleId] = useState('');
 
     const toggleShow = useCallback(() => {
         setFilterShow(filterShow => !filterShow);
@@ -64,14 +65,45 @@ const SavedKw = () => {
         if (keyword.status === 'NotStarted') {
             setShowCreditModal(true);
             setSelectedKeyword(keyword);
-        } else {
-            articleGenerate(keyword);
         }
+
     }
 
-    const handleGenerateConfirm = () => {
-        if (selectedKeyword) {
-            articleGenerate(selectedKeyword);
+    const handleGenerateConfirm = async () => {
+        setIsLoading(true);
+
+        if (!selectedKeyword) {
+            // articleSelectKwGenerate(selectedKeyword);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL!}/article`,
+                { keyword: `${selectedKeyword.keyword}` },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            setArticleId(response.data.id);
+            articleGenerate(response.data.id);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Failed to fetch subkeywords:", error.response?.data || error.message);
+            } else {
+                console.error("Failed to fetch subkeywords:", error);
+            }
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -79,8 +111,8 @@ const SavedKw = () => {
         setShowCreditModal(false);
     }
 
-    const articleGenerate = (keyword: Keyword) => {
-        router.push(`/setting?keyword=${encodeURIComponent(keyword.keyword)}`);
+    const articleGenerate = (articleId: string) => {
+        router.push(`/setting?articleId=${articleId}`);
     };
 
     const handleSelectAll = () => {
@@ -89,7 +121,7 @@ const SavedKw = () => {
         setKeywords(keywords.map(keyword => ({ ...keyword, selected: newSelectAll })));
     };
 
-    const handleCheckboxChange = (id: number) => {
+    const handleCheckboxChange = (id: string) => {
         setKeywords(keywords.map(keyword =>
             keyword.id === id ? { ...keyword, selected: !keyword.selected } : keyword
         ));
@@ -113,8 +145,9 @@ const SavedKw = () => {
                         }
                     });
 
-                console.log("keyword", response.data);
                 setKeywords(response.data.map((keyword: Keyword) => ({ ...keyword, selected: false })));
+                localStorage.setItem('userId', response.data?.user?.id);
+
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.log("Failed to fetch keywords:", error.response?.data || error.message);

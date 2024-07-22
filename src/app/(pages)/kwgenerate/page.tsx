@@ -24,9 +24,6 @@ const Home: React.FC = () => {
     const token = searchParams.get('token');
     if (token) {
       localStorage.setItem('token', token);
-      // Optionally, remove the token from the URL
-      // window.history.replaceState({}, document.title, "/kwgenerate");
-      router.push('/kwgenerate');
     }
   }, [searchParams]);
 

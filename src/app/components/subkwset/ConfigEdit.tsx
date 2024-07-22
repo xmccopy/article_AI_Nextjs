@@ -17,7 +17,6 @@ const ConfigEdit: React.FC<ConfigEditProps> = ({ configcontent }) => {
     };
 
     const handleSave = (newContent: string) => {
-        console.log('Saving content:', newContent);
         setContent(newContent);
         setIsActive(false);
         // Here you would typically send the content to your backend

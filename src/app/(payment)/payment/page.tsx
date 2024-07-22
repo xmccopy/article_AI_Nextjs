@@ -51,7 +51,6 @@ const StripePlan = () => {
             apiService.setToken(token);
             const response = await apiService.createCheckoutSession(plan.id)
 
-            console.log("Checkout response:", response);
             if (response.sessionId) {
                 const stripe = await stripePromise;
                 if (stripe) {

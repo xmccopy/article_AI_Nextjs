@@ -23,14 +23,12 @@ const Success = () => {
             }
 
             const response = await apiService.verifyPayment(sessionId);
-            console.log("Verification response:", response);
 
             if (response.success) {
                 setVerificationStatus('success');
                 setIsVerified(true);
                 // Update user credits in your frontend state
                 // For example: updateUserCredits(response.credits);
-                console.log("Payment successful!");
             } else {
                 setVerificationStatus('error');
                 setErrorMessage(response.message || 'Payment verification failed');
@@ -46,7 +44,6 @@ const Success = () => {
         const sessionId = searchParams.get('session_id');
 
         if (sessionId) {
-            console.log("session", sessionId);
             verifyPayment(sessionId);
         } else {
             setVerificationStatus('error');

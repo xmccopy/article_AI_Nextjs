@@ -99,7 +99,6 @@ const ArticleSetting = () => {
                         }
                     });
 
-                console.log("keyword", response.data);
                 setKeywords(response.data);
             } catch (error) {
                 if (axios.isAxiosError(error)) {

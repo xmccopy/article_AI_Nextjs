@@ -88,6 +88,7 @@ const LoginModal = () => {
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
                 setLoginError(error.response.data.message || 'An error occurred during login');
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response.data.message || 'An error occurred during registration', life: 3000 });
             } else {
                 setLoginError('Server error occurred');
             }

@@ -56,7 +56,6 @@ const ArticleEnd = () => {
                 }
 
                 setImageUrl(response.data?.image);
-                console.log("article content", response.data);
 
             } catch (error) {
                 if (axios.isAxiosError(error)) {
