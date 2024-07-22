@@ -51,6 +51,7 @@ const StripePlan = () => {
             apiService.setToken(token);
             const response = await apiService.createCheckoutSession(plan.id)
 
+            console.log("Checkout response:", response);
             if (response.sessionId) {
                 const stripe = await stripePromise;
                 if (stripe) {
@@ -107,7 +108,7 @@ const StripePlan = () => {
         };
 
         fetchPlan();
-    }, [apiService, getPlan]);
+    }, [apiService]);
 
     return (
         <div className="bg-white py-24 sm:py-32">

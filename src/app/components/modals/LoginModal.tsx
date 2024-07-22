@@ -67,6 +67,8 @@ const LoginModal = () => {
             const accessToken = response.data.backendTokens.accessToken;
 
             localStorage.setItem('token', accessToken);
+            console.log("[][][][][", response.data?.user?.id);
+            
             localStorage.setItem('userId', response.data?.user?.id);
 
             setUser({

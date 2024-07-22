@@ -35,6 +35,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
         else if (pathname === '/setting') setActiveButton('setting');
         else if (pathname === '/savedarticle') setActiveButton('savedarticle');
         else if (pathname === '/apiconnect') setActiveButton('apiconnect');
+        else if (pathname === '/prompt') setActiveButton('prompt');
         else setActiveButton('')
     }, [pathname])
 
@@ -104,7 +105,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                                 />
                             </li>
                         </ul>
-                        <ul className="flex flex-col">
+                        <ul className="flex flex-col mb-4 gap-1">
                             <li className="mx-3.5 mb-4">
                                 <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">設 定</p>
                             </li>
@@ -115,6 +116,16 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                                         onClick={() => handleNavigation('/apiconnect', 'apiconnect')}
                                         isActive={activeButton === 'apiconnect'}
                                         label="API連携"
+                                    />
+                                </a>
+                            </li>
+                            <li>
+                                <a className="" href="#">
+                                    <SideBtn
+                                        icon={<CiSettings size={24} />}
+                                        onClick={() => handleNavigation('/prompt', 'prompt')}
+                                        isActive={activeButton === 'prompt'}
+                                        label="Prompt"
                                     />
                                 </a>
                             </li>

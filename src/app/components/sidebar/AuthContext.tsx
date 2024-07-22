@@ -48,6 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             try {
                 const token = localStorage.getItem('token');
                 const userId = localStorage.getItem('userId');
+                console.log("authcontext", token);
+                
                 if (!token) {
                     throw new Error('No authentication token found');
                 }
@@ -57,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                console.log("auth_user", response.data)
 
                 setUser(response.data);
             } catch (error) {
