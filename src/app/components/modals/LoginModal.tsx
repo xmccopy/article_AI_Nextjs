@@ -85,10 +85,12 @@ const LoginModal = () => {
             });
 
             if (toast.current) {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000});
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000});
             }
 
-            router.push('/kwgenerate');
+            setTimeout(() => {
+                router.push('/kwgenerate')
+            }, 1500)
 
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

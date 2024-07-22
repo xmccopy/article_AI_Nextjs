@@ -73,11 +73,11 @@ const RegisterModal = () => {
                 credits: response.data?.user?.credits
             });
 
-            toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 3000 });
+            toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
 
             setTimeout(() => {
                 router.push('/login')
-            }, 2000)
+            }, 1500)
         } catch (error) {
             console.log(error)
             if (axios.isAxiosError(error) && error.response) {
