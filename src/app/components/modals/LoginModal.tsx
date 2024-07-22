@@ -85,7 +85,7 @@ const LoginModal = () => {
             });
 
             if (toast.current) {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!' });
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000});
             }
 
             router.push('/kwgenerate');
@@ -103,6 +103,7 @@ const LoginModal = () => {
 
     return (
         <div className="flex flex-col items-center justify-center">
+            <Toast ref={toast}/>
             <div className="sm:w-[520px] h-full p-8 rounded-[16px] bg-white">
                 <h2 className="text-[#1A1F36] text-left text-xl font-bold">ログイン</h2>
                 <form className="mt-4 text-[#1A1F36] space-y-4" onSubmit={handleLogin}>
