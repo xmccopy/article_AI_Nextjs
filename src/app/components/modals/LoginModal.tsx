@@ -18,6 +18,7 @@ interface LoginResponse {
         email: string;
         username: string;
         credits: number;
+        image: string;
     };
     backendTokens: {
         accessToken: string;
@@ -75,16 +76,15 @@ const LoginModal = () => {
                 username: response.data?.user?.username || '',
                 email: response.data?.user?.email || '',
                 company: response.data?.user?.email || '',
-                credits: response.data?.user?.credits
+                credits: response.data?.user?.credits,
+                image: response.data?.user?.image || ''
             });
 
             if (toast.current) {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000});
             }
 
-            setTimeout(() => {
-                router.push('/kwgenerate')
-            }, 1500)
+            router.push('/kwgenerate')
 
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {

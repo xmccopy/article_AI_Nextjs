@@ -17,6 +17,7 @@ interface RegisterResponse {
         username: string;
         company: string;
         credits: number;
+        image: string;
     };
     token: string;
 }
@@ -75,14 +76,15 @@ const RegisterModal = () => {
                 username: response.data?.user?.username || '',
                 email: response.data?.user?.email || '',
                 company: response.data?.user?.company || '',
-                credits: response.data?.user?.credits
+                credits: response.data?.user?.credits,
+                image: response.data?.user?.image || ''
             });
 
             toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
 
             setTimeout(() => {
                 router.push('/login')
-            }, 1500)
+            }, 1000)
         } catch (error) {
             console.log(error)
             if (axios.isAxiosError(error) && error.response) {

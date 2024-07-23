@@ -149,7 +149,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="flex gap-2">
-                                <Avatar />
+                                <Avatar imageUrl={user?.image}/>
                                 <div className="flex flex-col items-center justify-between">
                                     <p className="text-base">{user?.username}</p>
                                     <p className="text-[14px]">{user?.email}</p>

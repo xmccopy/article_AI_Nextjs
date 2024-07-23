@@ -277,7 +277,7 @@ const SavedKw = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className="text-center py-4 text-gray-500">
+                                <td colSpan={5} className="text-center py-12 text-gray-500">
                                     表示するデータがありません。
                                 </td>
                             </tr>
