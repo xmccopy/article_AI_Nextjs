@@ -116,33 +116,40 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
                             <th className="whitespace-nowrap py-3 w-[36%] font-bold text-gray-900 text-xs text-left">ステータス</th>
                         </tr>
                     </thead>
-                    <tbody className=" divide-gray-200 bg-gray-100 ">
-                        {/* {currentKeywords &&} */}
-                        {currentKeywords.map((keyword, index) => (
-                            <tr key={index}>
-                                <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">
-                                    <input
-                                        type="checkbox"
-                                        disabled={keyword.saved === 1}
-                                        checked={selectedKeywords.has(indexOfFirstKeyword + index)}
-                                        onChange={() => toggleKeyword(indexOfFirstKeyword + index)}
-                                        id={`Select${indexOfFirstKeyword + index}`}
-                                        className="size-5 rounded border-gray-300"
-                                    />
-                                </td>
-                                <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.text}</td>
-                                <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
-                                <td className="py-2">
-                                    <Button
-                                        className="custom-class"
-                                        disabled={false}
-                                        onClick={() => { }}
-                                        outline
-                                        label={keyword.saved === 1 ? "生成済み" : "未生成"}
-                                    />
+                    <tbody className="divide-gray-200 bg-gray-100">
+                        {currentKeywords.length > 0 ? (
+                            currentKeywords.map((keyword, index) => (
+                                <tr key={index}>
+                                    <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">
+                                        <input
+                                            type="checkbox"
+                                            disabled={keyword.saved === 1}
+                                            checked={selectedKeywords.has(indexOfFirstKeyword + index)}
+                                            onChange={() => toggleKeyword(indexOfFirstKeyword + index)}
+                                            id={`Select${indexOfFirstKeyword + index}`}
+                                            className="size-5 rounded border-gray-300"
+                                        />
+                                    </td>
+                                    <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.text}</td>
+                                    <td className="whitespace-nowrap px-8 py-1 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
+                                    <td className="py-2">
+                                        <Button
+                                            className="custom-class"
+                                            disabled={false}
+                                            onClick={() => { }}
+                                            outline
+                                            label={keyword.saved === 1 ? "生成済み" : "未生成"}
+                                        />
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="text-center py-8 text-gray-500">
+                                    表示するデータがない。
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

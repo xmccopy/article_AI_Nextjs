@@ -9,14 +9,21 @@ const withAuth = (WrappedComponent: React.ComponentType) => {
         const router = useRouter();
 
         useEffect(() => {
-            if (!user && !isLoading) {
-                router.push('/login');
+            if (!isLoading) {
+                if (!user) {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        router.push('/login');
+                    } else {
+                        // Fetch user data or validate token here if necessary
+                    }
+                }
             }
         }, [user, router, isLoading]);
 
         if (isLoading) {
             return (
-                <SpinSetting/>
+                <SpinSetting />
             )
         }
 

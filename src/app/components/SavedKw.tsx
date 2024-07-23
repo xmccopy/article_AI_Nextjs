@@ -206,44 +206,52 @@ const SavedKw = () => {
                     </thead>
 
                     <tbody className="divide-y divide-gray-200 bg-gray-100">
-                        {keywords.map((keyword) => (
-                            <tr key={keyword.id}>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
-                                    <input
-                                        type="checkbox"
-                                        id={`Select${keyword.id}`}
-                                        className="size-5 rounded border-gray-300"
-                                        checked={keyword.selected}
-                                        onChange={() => handleCheckboxChange(keyword.id)}
-                                    />
-                                </td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
-                                <td className="whitespace-nowrap flex items-center justify-center py-2">
-                                    <Button
-                                        onClick={() => { }}
-                                        outline
-                                        roundBtn
-                                        className={getStatusStyle(keyword.status)}
-                                        label={getStatusLabel(keyword.status)}
-                                    />
-                                </td>
-                                <td className="whitespace-nowrap py-2 ml-8">
-                                    <div className="flex justify-around items-center">
-                                        <Button
-                                            className="custom-class"
-                                            onClick={() => { handleButtonClick(keyword) }}
-                                            common
-                                            disabled={false}
-                                            isLoading={false}
-                                            label={getStatusLabelBtn(keyword.status)}
-                                            icon={FaStar}
+                        {keywords.length > 0 ? (
+                            keywords.map((keyword) => (
+                                <tr key={keyword.id}>
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
+                                        <input
+                                            type="checkbox"
+                                            id={`Select${keyword.id}`}
+                                            className="size-5 rounded border-gray-300"
+                                            checked={keyword.selected}
+                                            onChange={() => handleCheckboxChange(keyword.id)}
                                         />
-                                        <FaEllipsisVertical size={20} />
-                                    </div>
+                                    </td>
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
+                                    <td className="whitespace-nowrap flex items-center justify-center py-2">
+                                        <Button
+                                            onClick={() => { }}
+                                            outline
+                                            roundBtn
+                                            className={getStatusStyle(keyword.status)}
+                                            label={getStatusLabel(keyword.status)}
+                                        />
+                                    </td>
+                                    <td className="whitespace-nowrap py-2 ml-8">
+                                        <div className="flex justify-around items-center">
+                                            <Button
+                                                className="custom-class"
+                                                onClick={() => { handleButtonClick(keyword) }}
+                                                common
+                                                disabled={false}
+                                                isLoading={false}
+                                                label={getStatusLabelBtn(keyword.status)}
+                                                icon={FaStar}
+                                            />
+                                            <FaEllipsisVertical size={20} />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={4} className="text-center py-8 text-gray-500">
+                                    表示するデータがない。
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>

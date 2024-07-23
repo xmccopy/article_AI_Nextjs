@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SubTitle from "@/app/components/SubTitle";
 import Container from "@/app/components/Container";
@@ -14,18 +14,30 @@ interface Keyword {
   volume: string;
   saved: number;
 }
-
 const Home: React.FC = () => {
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const router = useRouter();
   const searchParams = useSearchParams();
+  console.log('----token----')
 
   useEffect(() => {
     const token = searchParams.get('token');
+    console.log('token', token)
     if (token) {
+      // Save the token to local storage
       localStorage.setItem('token', token);
+
+      // Redirect to the desired page
+      router.push('/kwgenerate'); // Change to your desired page
+    } else {
+      // Check if token is already in local storage
+      const storedToken = localStorage.getItem('token');
+      if (!storedToken) {
+        // If no token, redirect to login
+        router.push('/login');
+      }
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const handleKeywordsGenerated = (newKeywords: Keyword[]) => {
     setKeywords(newKeywords);

@@ -286,7 +286,7 @@ const Home = () => {
                       />
                     ))
                   ) : (
-                    <div>サブキーワードがありません。</div>
+                    <div className="text-gray-500">サブキーワードがありません。</div>
                   )
                 )}
               </div>
