@@ -1,50 +1,143 @@
-const ApiSetting = () => {
+'use client';
+
+import React, { useState, useEffect, ChangeEvent, FormEvent, useRef } from 'react';
+import axios from 'axios';
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+
+interface ApiData {
+    apiUsername: string;
+    apiPassword: string;
+    siteUrl: string;
+}
+
+const ApiSetting: React.FC = () => {
+    const [shopifyData, setShopifyData] = useState<ApiData>({
+        apiUsername: '',
+        apiPassword: '',
+        siteUrl: ''
+    });
+    const [wordpressData, setWordpressData] = useState<ApiData>({
+        apiUsername: '',
+        apiPassword: '',
+        siteUrl: ''
+    });
+    const [isShopifyValid, setIsShopifyValid] = useState<boolean>(false);
+    const [isWordpressValid, setIsWordpressValid] = useState<boolean>(false);
+
+    const toast = useRef<Toast>(null);
+
+    useEffect(() => {
+        const { apiUsername, apiPassword, siteUrl } = shopifyData;
+        setIsShopifyValid(apiUsername !== '' && apiPassword !== '' && siteUrl !== '');
+    }, [shopifyData]);
+
+    useEffect(() => {
+        const { apiUsername, apiPassword, siteUrl } = wordpressData;
+        setIsWordpressValid(apiUsername !== '' && apiPassword !== '' && siteUrl !== '');
+    }, [wordpressData]);
+
+    const handleInputChange = (
+        e: ChangeEvent<HTMLInputElement>,
+        setData: React.Dispatch<React.SetStateAction<ApiData>>
+    ) => {
+        const { name, value } = e.target;
+        setData((prevData) => ({ ...prevData, [name]: value }));
+    };
+
+    const handleSubmit = async (e: FormEvent, data: ApiData) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL!}/wp-api`, data); // Replace with your actual API endpoint
+            if (response.status === 200) {
+                toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
+            }
+        } catch (error) {
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Registration failed!', life: 2000 });
+        }
+    };
+
     return (
         <div className="flex flex-col gap-6 mt-6">
-            <form onSubmit={() => {}}>
+            <form onSubmit={(e) => handleSubmit(e, shopifyData)}>
                 <p className="text-[14px] text-[#1A1F36] font-bold mb-3">ShopifyのAPIキー</p>
-                <div className="flex gap-4 mt-4" >
+                <div className="flex flex-col gap-4 mt-4">
                     <input
                         type="text"
+                        name="apiUsername"
+                        value={shopifyData.apiUsername}
+                        onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="Input Username"
+                        placeholder="Input apiUsername"
                     />
                     <input
                         type="password"
+                        name="apiPassword"
+                        value={shopifyData.apiPassword}
+                        onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="Input password"
+                        placeholder="Input apiPassword"
                     />
-                    <input
-                        type="text"
-                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="WordPress API Key"
-                    />
-                    <button className="text-[14px] text-[#5469D4] min-w-max" type="submit">追加する</button>
+                    <div className="flex gap-4 sm:flex-row flex-col">
+                        <input
+                            type="text"
+                            name="siteUrl"
+                            value={shopifyData.siteUrl}
+                            onChange={(e) => handleInputChange(e, setShopifyData)}
+                            className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                            placeholder="WordPress API Key"
+                        />
+                        <button
+                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
+                            type="submit"
+                            disabled={!isShopifyValid}
+                        >
+                            追加する
+                        </button>
+                    </div>
                 </div>
             </form>
-            <form onSubmit={() => {}}>
+            <form onSubmit={(e) => handleSubmit(e, wordpressData)}>
                 <p className="text-[14px] text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
-                <div className="flex gap-4 mt-4" >
+                <div className="flex flex-col gap-4 mt-4">
                     <input
                         type="text"
+                        name="apiUsername"
+                        value={wordpressData.apiUsername}
+                        onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="Input Username"
+                        placeholder="Input apiUsername"
                     />
                     <input
                         type="password"
+                        name="apiPassword"
+                        value={wordpressData.apiPassword}
+                        onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="Input password"
+                        placeholder="Input apiPassword"
                     />
-                    <input
-                        type="text"
-                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                        placeholder="Shopify API Key"
-                    />
-                    <button className="text-[14px] text-[#5469D4] min-w-max" type="submit">追加する</button>
-                </div >
+                    <div className="flex gap-4 flex-col sm:flex-row">
+                        <input
+                            type="text"
+                            name="siteUrl"
+                            value={wordpressData.siteUrl}
+                            onChange={(e) => handleInputChange(e, setWordpressData)}
+                            className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                            placeholder="Shopify API Key"
+                        />
+                        <button
+                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
+                            type="submit"
+                            disabled={!isWordpressValid}
+                        >
+                            追加する
+                        </button>
+                    </div>
+                </div>
             </form>
         </div>
-    )
-}
+    );
+};
 
 export default ApiSetting;
