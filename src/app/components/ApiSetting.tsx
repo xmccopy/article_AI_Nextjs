@@ -49,7 +49,22 @@ const ApiSetting: React.FC = () => {
     const handleSubmit = async (e: FormEvent, data: ApiData) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL!}/wp-api`, data); // Replace with your actual API endpoint
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
+                data,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            ); // Replace with your actual API endpoint
             if (response.status === 200) {
                 toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
             }

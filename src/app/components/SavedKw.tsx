@@ -27,6 +27,9 @@ const SavedKw = () => {
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
     const [selectAll, setSelectAll] = useState(false); // State for "select all" checkbox
     const [articleId, setArticleId] = useState('');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
+    const [statusDropdownVisible, setStatusDropdownVisible] = useState(false);
 
     const toggleShow = useCallback(() => {
         setFilterShow(filterShow => !filterShow);
@@ -66,14 +69,12 @@ const SavedKw = () => {
             setShowCreditModal(true);
             setSelectedKeyword(keyword);
         }
-
     }
 
     const handleGenerateConfirm = async () => {
         setIsLoading(true);
 
         if (!selectedKeyword) {
-            // articleSelectKwGenerate(selectedKeyword);
             return;
         }
 
@@ -127,6 +128,31 @@ const SavedKw = () => {
         ));
     };
 
+    const handleSort = () => {
+        const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        setSortOrder(newSortOrder);
+        setKeywords(prevKeywords => {
+            return [...prevKeywords].sort((a, b) => {
+                const volumeA = parseInt(a.volume, 10);
+                const volumeB = parseInt(b.volume, 10);
+                if (newSortOrder === 'asc') {
+                    return volumeA - volumeB;
+                } else {
+                    return volumeB - volumeA;
+                }
+            });
+        });
+    };
+
+    const toggleStatusDropdown = () => {
+        setStatusDropdownVisible(!statusDropdownVisible);
+    }
+
+    const handleStatusFilter = (status: string | null) => {
+        setStatusFilter(status);
+        setStatusDropdownVisible(false);
+    }
+
     useEffect(() => {
         const fetchKeywords = async () => {
             setIsLoading(true);
@@ -162,6 +188,13 @@ const SavedKw = () => {
         fetchKeywords();
     }, []);
 
+    const filteredKeywords = keywords.filter(keyword => {
+        if (statusFilter) {
+            return keyword.status === statusFilter;
+        }
+        return true;
+    });
+
     return (
         <>
             <Credit
@@ -192,13 +225,20 @@ const SavedKw = () => {
                             <th className="whitespace-nowrap px-8 py-2">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">ボリューム</p>
-                                    <IoFilter />
+                                    <IoFilter onClick={handleSort} className="cursor-pointer" />
                                 </div>
                             </th>
-                            <th className="whitespace-nowrap px-8 py-2  text-left">
-                                <div className="flex flex-row gap-3">
+                            <th className="whitespace-nowrap px-8 py-2 text-left">
+                                <div className="relative flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">記事生成ステータス</p>
-                                    <IoFilter />
+                                    <IoFilter onClick={toggleStatusDropdown} className="cursor-pointer" />
+                                    {statusDropdownVisible && (
+                                        <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg">
+                                            <p onClick={() => handleStatusFilter('Created')} className="px-4 py-2 cursor-pointer hover:bg-gray-200">生成済</p>
+                                            <p onClick={() => handleStatusFilter('NotStarted')} className="px-4 py-2 cursor-pointer hover:bg-gray-200">未作成</p>
+                                            <p onClick={() => handleStatusFilter(null)} className="px-4 py-2 cursor-pointer hover:bg-gray-200">全て</p>
+                                        </div>
+                                    )}
                                 </div>
                             </th>
                             <th className="whitespace-nowrap py-2 font-bold text-gray-900 text-xs text-left"></th>
@@ -206,49 +246,39 @@ const SavedKw = () => {
                     </thead>
 
                     <tbody className="divide-y divide-gray-200 bg-gray-100">
-                        {keywords.length > 0 ? (
-                            keywords.map((keyword) => (
+                        {filteredKeywords.length > 0 ? (
+                            filteredKeywords.map((keyword) => (
                                 <tr key={keyword.id}>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
                                         <input
                                             type="checkbox"
-                                            id={`Select${keyword.id}`}
-                                            className="size-5 rounded border-gray-300"
                                             checked={keyword.selected}
                                             onChange={() => handleCheckboxChange(keyword.id)}
+                                            className="size-5 rounded border-gray-300"
                                         />
                                     </td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
-                                    <td className="whitespace-nowrap flex items-center justify-center py-2">
-                                        <Button
-                                            onClick={() => { }}
-                                            outline
-                                            roundBtn
-                                            className={getStatusStyle(keyword.status)}
-                                            label={getStatusLabel(keyword.status)}
-                                        />
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
+                                        <span className={`p-2 rounded bg-white text-[#5469D4] ${getStatusStyle(keyword.status)}`}>
+                                            {getStatusLabel(keyword.status)}
+                                        </span>
                                     </td>
-                                    <td className="whitespace-nowrap py-2 ml-8">
-                                        <div className="flex justify-around items-center">
-                                            <Button
-                                                className="custom-class"
-                                                onClick={() => { handleButtonClick(keyword) }}
-                                                common
-                                                disabled={false}
-                                                isLoading={false}
-                                                label={getStatusLabelBtn(keyword.status)}
-                                                icon={FaStar}
-                                            />
-                                            <FaEllipsisVertical size={20} />
-                                        </div>
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
+                                        <Button
+                                            className="custom-class"
+                                            disabled={false}
+                                            onClick={() => handleButtonClick(keyword)}
+                                            common
+                                            label={getStatusLabelBtn(keyword.status)}
+                                        />
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={4} className="text-center py-8 text-gray-500">
-                                    表示するデータがない。
+                                <td colSpan={5} className="text-center py-4 text-gray-500">
+                                    表示するデータがありません。
                                 </td>
                             </tr>
                         )}
@@ -257,6 +287,6 @@ const SavedKw = () => {
             </div>
         </>
     );
-}
+};
 
 export default SavedKw;
