@@ -35,26 +35,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const imageUrl = searchParams.get('image');
 
         if (userString && backendTokensString) {
-            // Parse the JSON strings
             const userInfor = JSON.parse(decodeURIComponent(userString));
             const backendTokens = JSON.parse(decodeURIComponent(backendTokensString));
 
-            // Save the tokens and user info to local storage
             localStorage.setItem('token', backendTokens.accessToken);
             localStorage.setItem('user', JSON.stringify(userInfor));
             localStorage.setItem('backendTokens', JSON.stringify(backendTokens));
 
-            // Update the user state
             setUser(userInfor);
-
-            // Redirect to the desired page
             router.push('/kwgenerate');
         } else {
             const storedToken = localStorage.getItem('token');
             if (!storedToken) {
-                // router.push('/login');
+                setIsLoading(false); // No token, stop loading
             } else {
-                // Fetch user data if token exists in local storage
                 fetchUserData(storedToken);
             }
         }
@@ -70,7 +64,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(response.data);
         } catch (error) {
             console.error('Failed to fetch user:', error);
-            // router.push('/login');
+            router.push('/register');
         } finally {
             setIsLoading(false);
         }
@@ -85,10 +79,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
-        if (!user) {
-            router.push('/login');
+        if (!isLoading && !user) {
+            router.push('/register');
         }
-    }, [user]);
+    }, [user, isLoading, router]);
 
     const setUserAndStore = (newUser: User | null) => {
         setUser(newUser);
@@ -118,7 +112,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');

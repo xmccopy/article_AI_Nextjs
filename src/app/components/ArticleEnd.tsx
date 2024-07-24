@@ -88,8 +88,7 @@ const ArticleEnd = () => {
             </div>
             <div className="flex flex-col gap-4">
                 <figure>
-                    {/* <BgImage imageUrl={imageUrl}/> */}
-                    <BgImage/>
+                    <BgImage imageUrl={imageUrl}/>
 
                 </figure>
                 <div className="bg-[#F5F8F8] p-6 text-[#1A1F36]">

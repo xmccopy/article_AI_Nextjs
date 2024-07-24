@@ -10,10 +10,11 @@ const BgImage: React.FC<BgImageProps> = ({
     imageUrl
 }) => {
     {
+        let url = `http://5.253.41.184:8000/downloads/${imageUrl.imageUrl}`;
         return (
             <div className="w-full h-[400px] relative">
                 <Image
-                    src={imageUrl ? imageUrl : '/iamges/register_bg.png'}
+                    src={url ? url : '/iamges/register_bg.png'}
                     alt="image" 
                     layout="fill"
                     objectFit="cover"

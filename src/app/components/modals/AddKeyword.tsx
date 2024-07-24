@@ -32,7 +32,7 @@ const AddKeyword: React.FC<AddKeywordProps> = ({
             }
 
             const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL!}/keyword/create`,
+                `${process.env.NEXT_PUBLIC_API_URL!}/keyword/create-one`,
                 { keyword: newKeywords },
                 {
                     headers: {

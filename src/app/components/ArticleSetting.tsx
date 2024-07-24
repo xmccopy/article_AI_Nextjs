@@ -121,7 +121,7 @@ const ArticleSetting = () => {
                 onConfirm={handleGenerateConfirm}
                 onCancel={handleGenerateCancel}
             />
-            <Filter onShow={filterShow} />
+            {/* <Filter onShow={filterShow} /> */}
             <div className="overflow-x-auto relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
