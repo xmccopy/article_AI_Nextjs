@@ -28,12 +28,14 @@ interface Config {
 }
 
 const ArticleEnd = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isImageLoading, setIsImageLoading] = useState(false);
+    const [isLoadiing, setIsLoading] = useState(false)
     const [articleConfig, setArticleConfig] = useState<Config[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState("");
     const router = useRouter();
     const toast = useRef<Toast>(null);
+
 
 
     useEffect(() => {
@@ -95,7 +97,7 @@ const ArticleEnd = () => {
             }
 
             await axios.patch(
-                `${process.env.NEXT_PUBLIC_API_URL!}/content/create/${articleId}`,
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/content/create/${articleId}`,
                 {}, // You can add any data you need to send in the body here
                 {
                     headers: {
@@ -147,6 +149,45 @@ const ArticleEnd = () => {
         }
     };
 
+    const iamgeAgainGenerate = async () => {
+        setIsImageLoading(true)
+        const articleId = localStorage.getItem('articleId');
+        if (!articleId) {
+            setError('Article ID is missing');
+            return;
+        }
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/image-again/${articleId}`,
+                {}, // You can add any data you need to send in the body here
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            if (toast.current) {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Image Generate!', life: 2000 });
+            }
+
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response?.data || 'An error occurred during registration', life: 1000 });
+                console.log("Failed to save article:", error.response?.data || error.message);
+            } else {
+                console.log("Failed to save article:", error);
+            }
+        } finally {
+            setIsImageLoading(false);
+        }
+    }
+
     return (
         <>
             <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
@@ -157,10 +198,11 @@ const ArticleEnd = () => {
                     <Button
                         className="custom-class"
                         disabled={false}
-                        onClick={() => { }}
+                        onClick={iamgeAgainGenerate}
                         common
                         icon={FaStar}
                         label="記事を再生成"
+                        isLoading={isImageLoading}
                     />
                 </div>
             </div>
