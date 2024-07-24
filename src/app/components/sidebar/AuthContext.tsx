@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
-        if (!isLoading && !user) {
+        if (!user) {
             router.push('/register');
         }
     }, [user, isLoading, router]);
@@ -99,7 +99,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('backendTokens');
         router.push('/login');
