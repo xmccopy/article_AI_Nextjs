@@ -14,13 +14,7 @@ const Home = () => {
 
     return (
         <Container>
-            <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row">
-                <Title label="記事生成" />
-                <Step end />
-            </div>
-            <div className="flex sm:flex-row flex-col gap-4 mt-4">
-                <ArticleEnd />
-            </div>
+           
         </Container>
     );
 }

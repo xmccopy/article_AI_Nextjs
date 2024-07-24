@@ -101,7 +101,7 @@ const ApiSetting: React.FC = () => {
                             value={shopifyData.siteUrl}
                             onChange={(e) => handleInputChange(e, setShopifyData)}
                             className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                            placeholder="WordPress API Key"
+                            placeholder="siteUrl"
                         />
                         <button
                             className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
@@ -139,7 +139,7 @@ const ApiSetting: React.FC = () => {
                             value={wordpressData.siteUrl}
                             onChange={(e) => handleInputChange(e, setWordpressData)}
                             className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                            placeholder="Shopify API Key"
+                            placeholder="siteUrl"
                         />
                         <button
                             className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}

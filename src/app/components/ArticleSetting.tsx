@@ -139,25 +139,31 @@ const ArticleSetting = () => {
                             </th>
                             <th className="whitespace-nowrap w-[25%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">article title</p>
+                                    <p className="font-bold text-gray-900 text-xs">記事タイトル</p>
                                     <IoFilter onClick={toggleShow} className="cursor-pointer" />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">main keyword</p>
+                                    <p className="font-bold text-gray-900 text-xs">メインキーワード</p>
                                     <IoFilter />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">subkeywords</p>
+                                    <p className="font-bold text-gray-900 text-xs">サブキーワード</p>
                                     <IoFilter />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">status</p>
+                                    <p className="font-bold text-gray-900 text-xs">ボリューム</p>
+                                    <IoFilter />
+                                </div>
+                            </th>
+                            <th className="whitespace-nowrap w-[10%] px-8 py-2">
+                                <div className="flex flex-row gap-3">
+                                    <p className="font-bold text-gray-900 text-xs">ボリューム</p>
                                     <IoFilter />
                                 </div>
                             </th>
@@ -178,11 +184,12 @@ const ArticleSetting = () => {
                                 </td>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.title}</td>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.keyword}</td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
+                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px] w-[150px] overflow-x-auto">
                                     {article.subKeywords.map((subKeyword, index) => (
                                         <span key={index}>{subKeyword.text},</span>
                                     ))}
                                 </td>
+                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">12030</td>
                                 <td className="whitespace-nowrap flex items-center justify-center py-2">
                                     <Button onClick={() => { }} outline roundBtn className={getStatusStyle(article.status)} label={getStatusLabel(article.status)} />
                                 </td>

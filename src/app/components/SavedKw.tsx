@@ -304,6 +304,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                                             disabled={false}
                                             onClick={() => handleButtonClick(keyword)}
                                             common
+                                            icon={FaStar}
                                             label={getStatusLabelBtn(keyword.status)}
                                         />
                                     </td>

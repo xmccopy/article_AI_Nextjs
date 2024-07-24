@@ -8,6 +8,11 @@ import { useRouter } from "next/navigation";
 import { Toast } from 'primereact/toast';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
+import Link from "next/link";
+import { FaStar } from "react-icons/fa6";
+import DownloadBtn from "./DownloadBtn";
+import Step from "./Step";
+import Title from "./Title";
 
 interface Subtitle {
     id: string; // Add an id field
@@ -83,7 +88,7 @@ const ArticleEnd = () => {
             setError('Article ID is missing');
             return;
         }
-        
+
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -101,7 +106,7 @@ const ArticleEnd = () => {
                 }
             );
             if (toast.current) {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000});
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000 });
             }
 
             router.push('/savedarticle');
@@ -117,74 +122,88 @@ const ArticleEnd = () => {
 
     return (
         <>
-            <div className="bg-[#F5F8F8] p-6 flex flex-col gap-4 text-[#1A1F36]">
-                <h2 className="text-xl font-bold mb-4">見出し</h2>
-                {articleConfig.map((config, index) => (
-                    <div key={index}>
-                        <h2 className="text-xl">{config.text}</h2>
-                        {config.subtitles.map((subtitle, subIndex) => (
-                            <div key={subIndex}>
-                                <h3 className="text-lg ml-4">{subtitle.text}</h3>
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-            <div className="flex flex-col gap-4">
-                <figure>
-                    <BgImage imageUrl={imageUrl} />
-                </figure>
-                <div className="bg-[#F5F8F8] p-6 text-[#1A1F36]">
-                    <div className="bg-white p-6">
-                        <h2 className="text-xl font-bold mb-4">目次</h2>
-                        <ul className="flex flex-col gap-1">
-                            {articleConfig.map((config, index) => (
-                                <li key={index}>
-                                    <h2 className="text-xl ml-2">{config.text}</h2>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="flex flex-col gap-4 mt-8 ml-2">
-                        {articleConfig.map((config, index) => (
-                            <div key={index}>
-                                <h2 className="text-xl">{config.text}</h2>
-                                {config.subtitles.map((subtitle, subIndex) => (
-                                    <div key={subIndex}>
-                                        <h3 className="text-lg ml-4">{subtitle.text}</h3>
-                                        <p className="text-base ml-8">{subtitle.content}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
+            <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
+                <Title label="記事生成" />
+                {/* <Step end /> */}
+                <div className="flex flex-row items-center justify-center gap-5">
+                    <p className="text-base text-gray-900">記事文字数：6000文字</p>
+                    <Button
+                        className="custom-class"
+                        disabled={false}
+                        onClick={() => { }}
+                        common
+                        icon={FaStar}
+                        label="記事を再生成"
+                    />
                 </div>
-                <div className="flex sm:flex-row flex-col items-center gap-2 sm:justify-end justify-center">
-                    <p className="text-[14px]">戻る</p>
-                    <Button
-                        className="custom-class"
-                        onClick={() => { }}
-                        common
-                        label="ダウンロード"
-                    />
-                    <Button
-                        className="custom-class"
-                        onClick={() => { }}
-                        common
-                        label="Shopifyに記事投稿"
-                    />
-                    <Button
-                        className="custom-class"
-                        onClick={() => { }}
-                        common
-                        label="WordPressに記事投稿"
-                    />
-                    <Button
-                        className="custom-class"
-                        onClick={articleSaved}
-                        common
-                        label="保存する"
-                    />
+            </div>
+            <div className="flex sm:flex-row flex-col gap-4 mt-4">
+                <div className="bg-[#F5F8F8] p-6 flex flex-col gap-4 text-[#1A1F36]">
+                    <h2 className="text-xl font-bold mb-4">見出し</h2>
+                    {articleConfig.map((config, index) => (
+                        <div key={index}>
+                            <h2 className="text-xl">{config.text}</h2>
+                            {config.subtitles.map((subtitle, subIndex) => (
+                                <div key={subIndex}>
+                                    <h3 className="text-lg ml-4">{subtitle.text}</h3>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+                <div className="flex flex-col gap-4">
+                    <div>
+                        <figure>
+                            <BgImage imageUrl={imageUrl} />
+                        </figure>
+                        <div className="absolute bottom-4 right-8 flex flex-row gap-2">
+                            <DownloadBtn onClick={() => { }} />
+                            <Button
+                                className="custom-class"
+                                disabled={false}
+                                onClick={() => { }}
+                                common
+                                icon={FaStar}
+                                label="画像を再生成"
+                            />
+                        </div>
+                    </div>
+                    <div className="bg-[#F5F8F8] p-6 text-[#1A1F36]">
+                        <div className="bg-white p-6">
+                            <h2 className="text-xl font-bold mb-4">目次</h2>
+                            <ul className="flex flex-col gap-1">
+                                {articleConfig.map((config, index) => (
+                                    <li key={index}>
+                                        <h2 className="text-xl ml-2">{config.text}</h2>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="flex flex-col gap-4 mt-8 ml-2">
+                            {articleConfig.map((config, index) => (
+                                <div key={index}>
+                                    <h2 className="text-xl">{config.text}</h2>
+                                    {config.subtitles.map((subtitle, subIndex) => (
+                                        <div key={subIndex}>
+                                            <h3 className="text-lg ml-4">{subtitle.text}</h3>
+                                            <p className="text-base ml-8">{subtitle.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex sm:flex-row flex-col items-center gap-2 sm:justify-end justify-center">
+                        <Link href="/register" className="text-[14px] text-gray-900 hover:underline ml-1 whitespace-nowrap font-semibold">
+                            戻 る
+                        </Link>
+                        <Button
+                            className="custom-class"
+                            onClick={articleSaved}
+                            common
+                            label="保存する"
+                        />
+                    </div>
                 </div>
             </div>
         </>
