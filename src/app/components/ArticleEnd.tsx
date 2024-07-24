@@ -119,13 +119,32 @@ const ArticleEnd = () => {
         }
     };
 
-    const handleDownloadImage = () => {
-        const link = document.createElement('a');
-        link.href = `http://5.253.41.184:8000/downloads/${imageUrl.imageUrl}`;
-        link.download = 'image.jpg'; // You can customize the filename here
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const handleDownloadImage = async () => {
+        try {
+            const imageUrlDL = `http://62.3.6.59:8000/downloads/${imageUrl}`;
+
+            // Fetch the image as a blob
+            const response = await fetch(imageUrlDL);
+            const blob = await response.blob();
+
+            // Create a blob URL
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'image.jpg'; // You can customize the filename here
+
+            // Append to body, click, and remove
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Revoke the blob URL
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Error downloading image:', error);
+        }
     };
 
     return (
