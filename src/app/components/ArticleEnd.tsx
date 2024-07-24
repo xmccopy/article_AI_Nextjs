@@ -121,7 +121,7 @@ const ArticleEnd = () => {
 
     const handleDownloadImage = () => {
         const link = document.createElement('a');
-        link.href = imageUrl;
+        link.href = `http://5.253.41.184:8000/downloads/${imageUrl.imageUrl}`;
         link.download = 'image.jpg'; // You can customize the filename here
         document.body.appendChild(link);
         link.click();
