@@ -122,14 +122,25 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
         router.push(`/setting?articleId=${articleId}`);
     };
 
+    // const handleSelectAll = () => {
+    //     const newSelectAll = !selectAll;
+    //     setSelectAll(newSelectAll);
+    //     const newKeywords = keywords.map(keyword => ({ ...keyword, selected: newSelectAll }));
+    //     setKeywords(newKeywords);
+    //     setKeywordsDL(newKeywords);
+    // };
+
     const handleSelectAll = () => {
         const newSelectAll = !selectAll;
         setSelectAll(newSelectAll);
-        const newKeywords = keywords.map(keyword => ({ ...keyword, selected: newSelectAll }));
+        const newKeywords = keywords.map(keyword =>
+            filteredKeywords.includes(keyword)
+                ? { ...keyword, selected: newSelectAll }
+                : keyword
+        );
         setKeywords(newKeywords);
         setKeywordsDL(newKeywords);
     };
-
 
     const handleCheckboxChange = (id: string) => {
         const newKeywords = keywords.map(keyword =>
@@ -222,15 +233,6 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
         return keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-     const sortedKeywords = filteredKeywords.sort((a, b) => {
-        if (sortOrder === 'asc') {
-            return a.volume.localeCompare(b.volume, undefined, { numeric: true });
-        } else if (sortOrder === 'desc') {
-            return b.volume.localeCompare(a.volume, undefined, { numeric: true });
-        }
-        return 0; // No sorting if 'none' is selected
-    });
-
     return (
         <>
             <Credit
@@ -270,8 +272,8 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                                     <IoFilter onClick={toggleStatusDropdown} className="cursor-pointer" />
                                     {statusDropdownVisible && (
                                         <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg">
-                                            <p onClick={() => handleStatusFilter('Created')} className="px-4 py-2 cursor-pointer text-gray-900 hover:bg-gray-200">生成済</p>
-                                            <p onClick={() => handleStatusFilter('NotStarted')} className="px-4 py-2 cursor-pointer text-gray-900 hover:bg-gray-200">未作成</p>
+                                            <p onClick={() => handleStatusFilter('Created')} className=" py-2 cursor-pointer text-gray-900 hover:bg-gray-200">生成済</p>
+                                            <p onClick={() => handleStatusFilter('NotStarted')} className=" py-2 cursor-pointer text-gray-900 hover:bg-gray-200">未作成</p>
                                             <p onClick={() => handleStatusFilter(null)} className="px-4 py-2 cursor-pointer hover:bg-gray-200">全て</p>
                                         </div>
                                     )}

@@ -29,7 +29,6 @@ const Home = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-
       const selectedKeywords = keywords.filter(keyword => keyword.selected);
 
       const response = await axios.post(
