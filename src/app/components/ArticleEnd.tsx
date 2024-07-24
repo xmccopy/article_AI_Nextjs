@@ -176,7 +176,7 @@ const ArticleEnd = () => {
             if (toast.current) {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Image Generate!', life: 2000 });
             }
-            setImageUrl(response.data?.image);
+            setImageUrl(response.data);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response?.data || 'An error occurred during registration', life: 1000 });
@@ -202,7 +202,7 @@ const ArticleEnd = () => {
             }
 
             const response = await axios.patch(
-                `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/content-again/${articleId}`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
