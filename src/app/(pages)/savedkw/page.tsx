@@ -108,13 +108,20 @@ const Home = () => {
     setShowCreditModal(false);
   }
 
+  const handleAddKeyword = (newKeyword: string) => {
+    setKeywords(prevKeywords => [
+      ...prevKeywords,
+      { id: Date.now().toString(), keyword: newKeyword, volume: "", status: "", selected: false }
+    ]);
+    setShowCreditModal(false);
+  }
 
   return (
     <>
       <Container>
         <AddKeyword
           show={showCreditModal}
-          onConfirm={()=>{}}
+          onConfirm={handleAddKeyword}
           onCancel={handleGenerateCancel}
         />
         <div className="flex flex-col gap-5 relative">

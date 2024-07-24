@@ -23,6 +23,7 @@ const AddKeyword: React.FC<AddKeywordProps> = ({
         setNewKeyword(event.target.value);
     };
 
+
     const handleGenerate = async () => {
         try {
             const token = localStorage.getItem('token');

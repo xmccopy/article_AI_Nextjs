@@ -16,7 +16,8 @@ interface Keyword {
     keyword: string;
     volume: string;
     status: string;
-    selected: boolean; // Add selected property
+    selected: boolean;
+    createdAt: string;
 }
 
 interface SavedKwProps {
@@ -200,11 +201,13 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                         }
                     });
 
-                const newKeywords = response.data.map((keyword: Keyword) => ({ ...keyword, selected: false }));
-                setKeywords(newKeywords);
-                setKeywordsDL(newKeywords); // Update the parent component's state
-                localStorage.setItem('userId', response.data?.user?.id);
+                const sortedKeywords = response.data
+                    .map((keyword: Keyword) => ({ ...keyword, selected: false }))
+                    .sort((a: Keyword, b: Keyword) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+                setKeywords(sortedKeywords);
+                setKeywordsDL(sortedKeywords); // Update the parent component's state
+                localStorage.setItem('userId', response.data?.user?.id);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.log("Failed to fetch keywords:", error.response?.data || error.message);
@@ -265,9 +268,9 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                                     <IoFilter onClick={toggleStatusDropdown} className="cursor-pointer" />
                                     {statusDropdownVisible && (
                                         <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg">
-                                            <p onClick={() => handleStatusFilter('Created')} className=" py-2 cursor-pointer text-gray-900 hover:bg-gray-200">生成済</p>
-                                            <p onClick={() => handleStatusFilter('NotStarted')} className=" py-2 cursor-pointer text-gray-900 hover:bg-gray-200">未作成</p>
-                                            <p onClick={() => handleStatusFilter(null)} className="px-4 py-2 cursor-pointer hover:bg-gray-200">全て</p>
+                                            <p onClick={() => handleStatusFilter('Created')} className="px-6 py-1 cursor-pointer text-gray-900 hover:bg-gray-200">生成済</p>
+                                            <p onClick={() => handleStatusFilter('NotStarted')} className="px-6 py-1 cursor-pointer text-gray-900 hover:bg-gray-200">未作成</p>
+                                            <p onClick={() => handleStatusFilter(null)} className="px-6 py-1 cursor-pointer hover:bg-gray-200">全て</p>
                                         </div>
                                     )}
                                 </div>

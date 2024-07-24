@@ -81,7 +81,7 @@ const Success = () => {
                 <h1 className='text-4xl font-bold mb-8 text-[#1A1F36]'>お支払いが完了しました！</h1>
                 <p className='mb-6 text-[#1A1F36] text-xl'>ご購入ありがとうございました。お取引は正常に完了いたしました。</p>
                 <button
-                    onClick={() => router.push('/savedkw')}
+                    onClick={() => router.push('/kwgenerate')}
                     className='px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition'
                 >
                     <p className='text-base font-bold'>ホームページに戻る</p>
