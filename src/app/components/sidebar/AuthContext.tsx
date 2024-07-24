@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         const userString = searchParams.get('user');
         const backendTokensString = searchParams.get('backendTokens');
+        const imageUrl = searchParams.get('image');
 
         if (userString && backendTokensString) {
             // Parse the JSON strings
@@ -51,7 +52,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
             const storedToken = localStorage.getItem('token');
             if (!storedToken) {
-                router.push('/login');
+                // router.push('/login');
             } else {
                 // Fetch user data if token exists in local storage
                 fetchUserData(storedToken);
@@ -69,7 +70,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(response.data);
         } catch (error) {
             console.error('Failed to fetch user:', error);
-            router.push('/login');
+            // router.push('/login');
         } finally {
             setIsLoading(false);
         }
@@ -84,10 +85,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     useEffect(() => {
-        if (!isLoading && !user) {
+        if (!user) {
             router.push('/login');
         }
-    }, [user, isLoading, router]);
+    }, [user]);
 
     const setUserAndStore = (newUser: User | null) => {
         setUser(newUser);

@@ -4,7 +4,7 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ['oaidalleapiprodscus.blob.core.windows.net'],
+    domains: ['lh3.googleusercontent.com'],
   },
 };
 

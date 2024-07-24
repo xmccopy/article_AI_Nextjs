@@ -200,7 +200,7 @@ const RegisterModal = () => {
                     </div>
                 </button>
                 <p className=" text-[14px] !mt-4 text-left underline">
-                    <Link href="./login" className="text-[#628CF8] hover:underline ml-1 whitespace-nowrap">
+                    <Link href="/login" className="text-[#628CF8] hover:underline ml-1 whitespace-nowrap">
                         ログインはこちら
                     </Link>
                 </p>

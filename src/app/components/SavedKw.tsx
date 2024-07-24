@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import axios from 'axios';
 import Credit from "./modals/Credit";
 import { FaStar } from "react-icons/fa";
+import AddKeyword from "./modals/AddKeyword";
 
 interface Keyword {
     id: string;
@@ -121,14 +122,6 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
     const articleGenerate = (articleId: string) => {
         router.push(`/setting?articleId=${articleId}`);
     };
-
-    // const handleSelectAll = () => {
-    //     const newSelectAll = !selectAll;
-    //     setSelectAll(newSelectAll);
-    //     const newKeywords = keywords.map(keyword => ({ ...keyword, selected: newSelectAll }));
-    //     setKeywords(newKeywords);
-    //     setKeywordsDL(newKeywords);
-    // };
 
     const handleSelectAll = () => {
         const newSelectAll = !selectAll;
