@@ -29,6 +29,7 @@ interface Config {
 
 const ArticleEnd = () => {
     const [isImageLoading, setIsImageLoading] = useState(false);
+    const [isArticleGenerateLoading, setIsArticleEndLoading] = useState(false);
     const [isLoadiing, setIsLoading] = useState(false)
     const [articleConfig, setArticleConfig] = useState<Config[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -188,6 +189,10 @@ const ArticleEnd = () => {
         }
     }
 
+    const articleAgainGenerate = async () => {
+
+    }
+
     return (
         <>
             <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
@@ -198,11 +203,11 @@ const ArticleEnd = () => {
                     <Button
                         className="custom-class"
                         disabled={false}
-                        onClick={iamgeAgainGenerate}
+                        onClick={articleAgainGenerate}
                         common
                         icon={FaStar}
                         label="記事を再生成"
-                        isLoading={isImageLoading}
+                        isLoading={isArticleGenerateLoading}
                     />
                 </div>
             </div>
@@ -230,10 +235,11 @@ const ArticleEnd = () => {
                             <Button
                                 className="custom-class"
                                 disabled={false}
-                                onClick={() => { }}
+                                onClick={iamgeAgainGenerate}
                                 common
                                 icon={FaStar}
                                 label="画像を再生成"
+                                isLoading={isImageLoading}
                             />
                         </div>
                     </div>
