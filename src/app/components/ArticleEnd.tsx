@@ -163,7 +163,7 @@ const ArticleEnd = () => {
                 throw new Error('No authentication token found');
             }
 
-            await axios.patch(
+            const response = await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URL!}/article/image-again/${articleId}`,
                 {}, // You can add any data you need to send in the body here
                 {
@@ -176,7 +176,7 @@ const ArticleEnd = () => {
             if (toast.current) {
                 toast.current.show({ severity: 'success', summary: 'Success', detail: 'Image Generate!', life: 2000 });
             }
-
+            setImageUrl(response.data?.image);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response?.data || 'An error occurred during registration', life: 1000 });
@@ -190,7 +190,44 @@ const ArticleEnd = () => {
     }
 
     const articleAgainGenerate = async () => {
+        setIsArticleEndLoading(true);
+        const articleId = localStorage.getItem('articleId');
+        if (!articleId) {
+            throw new Error('No article Id is missing');
+        }
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
 
+            const response = await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+            if (response.data?.contentJson === "") {
+                setError('No content available for this article');
+            } else {
+                setArticleConfig(response.data?.contentJson || '[hkhjkhjhklhlk]');
+            }
+
+            // setImageUrl(response.data?.image);
+            console.log("article--------------", response.data);
+
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log("Failed to fetch keywords:", error.response?.data || error.message);
+            } else {
+                console.log("Failed to fetch keywords:", error);
+            }
+        } finally {
+            setIsArticleEndLoading(false)
+        }
     }
 
     return (
