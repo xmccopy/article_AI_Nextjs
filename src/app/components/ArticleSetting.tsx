@@ -1,26 +1,35 @@
 'use client'
 
-import Button from "./Button";
-import { IoFilter } from "react-icons/io5";
-import { FaEllipsisVertical } from "react-icons/fa6"
 import { useCallback, useEffect, useState } from "react";
-import Filter from "./modals/Filter";
+import { IoFilter } from "react-icons/io5";
+import {  FaStar } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
+import Button from "./Button";
 import Credit from "./modals/Credit";
-import { FaStar } from "react-icons/fa";
+
+interface SubKeyword {
+    text: string;
+    selected: boolean;
+}
+
+interface Article {
+    id: number;
+    title: string;
+    keyword: string;
+    subKeywords: SubKeyword[];
+    status: string;
+}
 
 interface Keyword {
-    id: number;
     keyword: string;
-    volume: string;
     status: string;
 }
 
 const ArticleSetting = () => {
     const router = useRouter();
     const [filterShow, setFilterShow] = useState(false);
-    const [keywords, setKeywords] = useState<Keyword[]>([]);
+    const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
@@ -31,8 +40,8 @@ const ArticleSetting = () => {
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'Created':
-                return '生成済';
+            case 'Completed':
+                return '完 成';
             case 'NotStarted':
                 return '未作成';
             default:
@@ -49,8 +58,8 @@ const ArticleSetting = () => {
 
     const getStatusLabelBtn = (status: string) => {
         switch (status) {
-            case 'Created':
-                return '編 集';
+            case 'Completed':
+                return '完 成';
             case 'NotStarted':
                 return '記事生成';
             default:
@@ -81,9 +90,8 @@ const ArticleSetting = () => {
         router.push(`/setting?keyword=${encodeURIComponent(keyword.keyword)}`);
     };
 
-
     useEffect(() => {
-        const fetchKeywords = async () => {
+        const fetchArticles = async () => {
             try {
                 const token = localStorage.getItem('token');
                 if (!token) {
@@ -91,27 +99,28 @@ const ArticleSetting = () => {
                 }
 
                 const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL!}/keyword`,
+                    `${process.env.NEXT_PUBLIC_API_URL!}/article`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         }
-                    });
+                    }
+                );
 
-                setKeywords(response.data);
+                setArticles(response.data);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    console.log("Failed to fetch keywords:", error.response?.data || error.message);
+                    console.log("Failed to fetch articles:", error.response?.data || error.message);
                 } else {
-                    console.log("Failed to fetch keywords:", error);
+                    console.log("Failed to fetch articles:", error);
                 }
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchKeywords();
+        fetchArticles();
     }, []);
 
     return (
@@ -121,40 +130,38 @@ const ArticleSetting = () => {
                 onConfirm={handleGenerateConfirm}
                 onCancel={handleGenerateCancel}
             />
-            {/* <Filter onShow={filterShow} /> */}
             <div className="overflow-x-auto relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
                         <tr>
-                            <th className=" px-8 py-3 font-bold text-gray-900 text-xs text-left w-[5%]">
+                            <th className="px-8 py-3 font-bold text-gray-900 text-xs text-left w-[5%]">
                                 <input type="checkbox" id="SelectAll" className="size-5 rounded border-gray-300" />
                             </th>
                             <th className="whitespace-nowrap w-[25%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">キーワード</p>
+                                    <p className="font-bold text-gray-900 text-xs">article title</p>
                                     <IoFilter onClick={toggleShow} className="cursor-pointer" />
-
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">メインキーワード</p>
+                                    <p className="font-bold text-gray-900 text-xs">main keyword</p>
                                     <IoFilter />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">サブキーワード</p>
+                                    <p className="font-bold text-gray-900 text-xs">subkeywords</p>
                                     <IoFilter />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap w-[10%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
-                                    <p className="font-bold text-gray-900 text-xs">ボリューム</p>
+                                    <p className="font-bold text-gray-900 text-xs">status</p>
                                     <IoFilter />
                                 </div>
                             </th>
-                            <th className="whitespace-nowrap w-[10%] px-8 py-2  text-left">
+                            <th className="whitespace-nowrap w-[10%] px-8 py-2 text-left">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">記事生成ステータス</p>
                                     <IoFilter />
@@ -163,32 +170,34 @@ const ArticleSetting = () => {
                             <th className="whitespace-nowrap py-2 w-[15%] font-bold text-gray-900 text-xs text-left"></th>
                         </tr>
                     </thead>
-
                     <tbody className="divide-y divide-gray-200 bg-gray-100">
-                        {keywords.map((keyword) => (
-                            <tr key={keyword.id}>
+                        {articles.map((article) => (
+                            <tr key={article.id}>
                                 <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
-                                    <input type="checkbox" id={`Select${keyword.id}`} className="size-5 rounded border-gray-300" />
+                                    <input type="checkbox" className="size-5 rounded border-gray-300" />
                                 </td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">main keyword</td>
-                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
+                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.title}</td>
+                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.keyword}</td>
+                                <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
+                                    {article.subKeywords.map((subKeyword, index) => (
+                                        <span key={index}>{subKeyword.text},</span>
+                                    ))}
+                                </td>
                                 <td className="whitespace-nowrap flex items-center justify-center py-2">
-                                    <Button onClick={() => { }} outline roundBtn className={getStatusStyle(keyword.status)} label={getStatusLabel(keyword.status)} />
+                                    <Button onClick={() => { }} outline roundBtn className={getStatusStyle(article.status)} label={getStatusLabel(article.status)} />
                                 </td>
                                 <td className="whitespace-nowrap py-2 ml-8">
                                     <div className="flex justify-around items-center">
                                         <Button
                                             className="custom-class"
-                                            onClick={() => { handleButtonClick(keyword) }}
+                                            onClick={() => { handleButtonClick({ keyword: article.keyword, status: article.status }) }}
                                             common
                                             disabled={false}
                                             isLoading={false}
-                                            label={getStatusLabelBtn(keyword.status)}
+                                            label={getStatusLabelBtn(article.status)}
                                             icon={FaStar}
                                         />
-                                        <FaEllipsisVertical size={20} />
+                                        {/* <FaEllipsisVertical size={20} /> */}
                                     </div>
                                 </td>
                             </tr>
@@ -197,7 +206,7 @@ const ArticleSetting = () => {
                 </table>
             </div>
         </>
-    )
+    );
 }
 
 export default ArticleSetting;

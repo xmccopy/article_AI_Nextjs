@@ -1,10 +1,13 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import axios from "axios";
 import BgImage from "./BgImage";
-
+import { useRouter } from "next/navigation";
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 
 interface Subtitle {
     id: string; // Add an id field
@@ -20,19 +23,21 @@ interface Config {
     subtitles: Subtitle[];
 }
 
-
 const ArticleEnd = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [articleConfig, SetArticleConfig] = useState<Config[]>([]);
+    const [articleConfig, setArticleConfig] = useState<Config[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState("");
+    const router = useRouter();
+    const toast = useRef<Toast>(null);
+
 
     useEffect(() => {
         const fetchContent = async () => {
             setIsLoading(true);
             const articleId = localStorage.getItem('articleId');
             if (!articleId) {
-                throw new Error('No article Id is missing')
+                throw new Error('No article Id is missing');
             }
             try {
                 const token = localStorage.getItem('token');
@@ -52,10 +57,11 @@ const ArticleEnd = () => {
                 if (response.data?.contentJson === "") {
                     setError('No content available for this article');
                 } else {
-                    SetArticleConfig(response.data?.contentJson || '[hkhjkhjhklhlk]');
+                    setArticleConfig(response.data?.contentJson || '[hkhjkhjhklhlk]');
                 }
 
                 setImageUrl(response.data?.image);
+                console.log("article--------------", response.data);
 
             } catch (error) {
                 if (axios.isAxiosError(error)) {
@@ -70,6 +76,44 @@ const ArticleEnd = () => {
 
         fetchContent();
     }, []);
+
+    const articleSaved = async () => {
+        const articleId = localStorage.getItem('articleId');
+        if (!articleId) {
+            setError('Article ID is missing');
+            return;
+        }
+        
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URL!}/content/create/${articleId}`,
+                {}, // You can add any data you need to send in the body here
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            if (toast.current) {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000});
+            }
+
+            router.push('/savedarticle');
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: error.response?.data || 'An error occurred during registration', life: 1000 });
+                console.log("Failed to save article:", error.response?.data || error.message);
+            } else {
+                console.log("Failed to save article:", error);
+            }
+        }
+    };
 
     return (
         <>
@@ -88,8 +132,7 @@ const ArticleEnd = () => {
             </div>
             <div className="flex flex-col gap-4">
                 <figure>
-                    <BgImage imageUrl={imageUrl}/>
-
+                    <BgImage imageUrl={imageUrl} />
                 </figure>
                 <div className="bg-[#F5F8F8] p-6 text-[#1A1F36]">
                     <div className="bg-white p-6">
@@ -138,14 +181,14 @@ const ArticleEnd = () => {
                     />
                     <Button
                         className="custom-class"
-                        onClick={() => { }}
+                        onClick={articleSaved}
                         common
                         label="保存する"
                     />
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
 export default ArticleEnd;
