@@ -18,6 +18,7 @@ const BgImage: React.FC<BgImageProps> = ({
                     alt="image" 
                     layout="fill"
                     objectFit="cover"
+                    className="z-10"
                 />
             </div>
         )

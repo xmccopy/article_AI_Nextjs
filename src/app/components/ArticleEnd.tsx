@@ -152,11 +152,11 @@ const ArticleEnd = () => {
                     ))}
                 </div>
                 <div className="flex flex-col gap-4">
-                    <div>
+                    <div className="relative">
                         <figure>
                             <BgImage imageUrl={imageUrl} />
                         </figure>
-                        <div className="absolute bottom-4 right-8 flex flex-row gap-2">
+                        <div className="absolute bottom-4 right-8 flex flex-row gap-2 z-50">
                             <DownloadBtn onClick={() => { }} />
                             <Button
                                 className="custom-class"
