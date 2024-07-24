@@ -11,7 +11,6 @@ import 'primereact/resources/primereact.min.css';
 import Link from "next/link";
 import { FaStar } from "react-icons/fa6";
 import DownloadBtn from "./DownloadBtn";
-import Step from "./Step";
 import Title from "./Title";
 
 interface Subtitle {
@@ -120,6 +119,15 @@ const ArticleEnd = () => {
         }
     };
 
+    const handleDownloadImage = () => {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'image.jpg'; // You can customize the filename here
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <>
             <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
@@ -157,7 +165,7 @@ const ArticleEnd = () => {
                             <BgImage imageUrl={imageUrl} />
                         </figure>
                         <div className="absolute bottom-4 right-8 flex flex-row gap-2 z-50">
-                            <DownloadBtn onClick={() => { }} />
+                            <DownloadBtn onClick={handleDownloadImage} />
                             <Button
                                 className="custom-class"
                                 disabled={false}

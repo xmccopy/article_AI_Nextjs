@@ -257,7 +257,6 @@ const Home = () => {
       <div className="flex flex-col gap-5">
         <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row">
           <Title label="記事生成" />
-          <Step />
         </div>
         <SubTitle order="1" label="サブキーワードを設定してください" sublabel="" />
         <KeyWordShow label={keyword} />

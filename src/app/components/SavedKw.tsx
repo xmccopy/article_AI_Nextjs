@@ -56,7 +56,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
 
     const getStatusStyle = (status: string) => {
         if (status === 'Created') {
-            return 'bg-[#FF854F] text-white';
+            return 'bg-white text-[#5469D4]';
         }
         return '';
     }
