@@ -9,13 +9,15 @@ interface AvatarProps {
 const Avatar: React.FC<AvatarProps> = ({
     imageUrl
 }) => {
+    const placeholderImage = "/images/placeholder.jpg";
+
     return (
         <Image
             className="rounded-full"
-            height="48"
-            width="48"
+            height={48}
+            width={48}
             alt="Avatar"
-            src={imageUrl ? imageUrl : "/images/placeholder.jpg"}
+            src={imageUrl || placeholderImage}
         />
     )
 }

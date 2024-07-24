@@ -18,10 +18,16 @@ interface Keyword {
     selected: boolean; // Add selected property
 }
 
-const SavedKw = () => {
+interface SavedKwProps {
+    setKeywordsDL: React.Dispatch<React.SetStateAction<Keyword[]>>;
+    initialKeywords: Keyword[];
+    searchTerm: string;
+}
+
+const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searchTerm }) => {
     const router = useRouter();
     const [filterShow, setFilterShow] = useState(false);
-    const [keywords, setKeywords] = useState<Keyword[]>([]);
+    const [keywords, setKeywords] = useState<Keyword[]>(initialKeywords);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
@@ -31,9 +37,9 @@ const SavedKw = () => {
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
     const [statusDropdownVisible, setStatusDropdownVisible] = useState(false);
 
-    const toggleShow = useCallback(() => {
-        setFilterShow(filterShow => !filterShow);
-    }, []);
+    useEffect(() => {
+        setKeywords(initialKeywords);
+    }, [initialKeywords]);
 
     const getStatusLabel = (status: string) => {
         switch (status) {
@@ -119,16 +125,35 @@ const SavedKw = () => {
     const handleSelectAll = () => {
         const newSelectAll = !selectAll;
         setSelectAll(newSelectAll);
-        setKeywords(keywords.map(keyword => ({ ...keyword, selected: newSelectAll })));
+        const newKeywords = keywords.map(keyword => ({ ...keyword, selected: newSelectAll }));
+        setKeywords(newKeywords);
+        setKeywordsDL(newKeywords);
     };
 
+
     const handleCheckboxChange = (id: string) => {
-        setKeywords(keywords.map(keyword =>
+        const newKeywords = keywords.map(keyword =>
             keyword.id === id ? { ...keyword, selected: !keyword.selected } : keyword
-        ));
+        );
+        setKeywords(newKeywords);
+        setKeywordsDL(newKeywords);
     };
 
     const handleSort = () => {
+        const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+        setSortOrder(newSortOrder);
+        setKeywords(prevKeywords => {
+            return [...prevKeywords].sort((a, b) => {
+                if (newSortOrder === 'asc') {
+                    return a.keyword.localeCompare(b.keyword);
+                } else {
+                    return b.keyword.localeCompare(a.keyword);
+                }
+            });
+        });
+    };
+
+    const handleVolumeSort = () => {
         const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
         setSortOrder(newSortOrder);
         setKeywords(prevKeywords => {
@@ -171,7 +196,9 @@ const SavedKw = () => {
                         }
                     });
 
-                setKeywords(response.data.map((keyword: Keyword) => ({ ...keyword, selected: false })));
+                const newKeywords = response.data.map((keyword: Keyword) => ({ ...keyword, selected: false }));
+                setKeywords(newKeywords);
+                setKeywordsDL(newKeywords); // Update the parent component's state
                 localStorage.setItem('userId', response.data?.user?.id);
 
             } catch (error) {
@@ -186,13 +213,22 @@ const SavedKw = () => {
         };
 
         fetchKeywords();
-    }, []);
+    }, [setKeywordsDL]);
 
     const filteredKeywords = keywords.filter(keyword => {
         if (statusFilter) {
-            return keyword.status === statusFilter;
+            return keyword.status === statusFilter && keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
         }
-        return true;
+        return keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+     const sortedKeywords = filteredKeywords.sort((a, b) => {
+        if (sortOrder === 'asc') {
+            return a.volume.localeCompare(b.volume, undefined, { numeric: true });
+        } else if (sortOrder === 'desc') {
+            return b.volume.localeCompare(a.volume, undefined, { numeric: true });
+        }
+        return 0; // No sorting if 'none' is selected
     });
 
     return (
@@ -202,7 +238,7 @@ const SavedKw = () => {
                 onConfirm={handleGenerateConfirm}
                 onCancel={handleGenerateCancel}
             />
-            <Filter onShow={filterShow} />
+            {/* <Filter onShow={filterShow} /> */}
             <div className="overflow-x-auto relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
@@ -219,13 +255,13 @@ const SavedKw = () => {
                             <th className="whitespace-nowrap px-8 py-2">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">キーワード</p>
-                                    <IoFilter onClick={toggleShow} className="cursor-pointer" />
+                                    <IoFilter onClick={handleSort} className="cursor-pointer" />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap px-8 py-2">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">ボリューム</p>
-                                    <IoFilter onClick={handleSort} className="cursor-pointer" />
+                                    <IoFilter onClick={handleVolumeSort} className="cursor-pointer" />
                                 </div>
                             </th>
                             <th className="whitespace-nowrap px-8 py-2 text-left">
@@ -234,8 +270,8 @@ const SavedKw = () => {
                                     <IoFilter onClick={toggleStatusDropdown} className="cursor-pointer" />
                                     {statusDropdownVisible && (
                                         <div className="absolute top-full left-0 mt-1 bg-white border rounded shadow-lg">
-                                            <p onClick={() => handleStatusFilter('Created')} className="px-4 py-2 cursor-pointer hover:bg-gray-200">生成済</p>
-                                            <p onClick={() => handleStatusFilter('NotStarted')} className="px-4 py-2 cursor-pointer hover:bg-gray-200">未作成</p>
+                                            <p onClick={() => handleStatusFilter('Created')} className="px-4 py-2 cursor-pointer text-gray-900 hover:bg-gray-200">生成済</p>
+                                            <p onClick={() => handleStatusFilter('NotStarted')} className="px-4 py-2 cursor-pointer text-gray-900 hover:bg-gray-200">未作成</p>
                                             <p onClick={() => handleStatusFilter(null)} className="px-4 py-2 cursor-pointer hover:bg-gray-200">全て</p>
                                         </div>
                                     )}
