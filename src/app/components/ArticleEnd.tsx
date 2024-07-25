@@ -12,6 +12,7 @@ import Link from "next/link";
 import { FaStar } from "react-icons/fa6";
 import DownloadBtn from "./DownloadBtn";
 import Title from "./Title";
+import ConfigEdit from "./subkwset/ConfigEdit";
 
 interface Subtitle {
     id: string; // Add an id field
@@ -298,7 +299,7 @@ const ArticleEnd = () => {
                                     {config.subtitles.map((subtitle, subIndex) => (
                                         <div key={subIndex}>
                                             <h3 className="text-lg ml-4">{subtitle.text}</h3>
-                                            <p className="text-base ml-8">{subtitle.content}</p>
+                                            <p className="text-base ml-8"><ConfigEdit configcontent={subtitle.content} /></p>
                                         </div>
                                     ))}
                                 </div>
