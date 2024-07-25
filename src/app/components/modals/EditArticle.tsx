@@ -26,7 +26,7 @@ const EditArticle: React.FC<EditArticleProps> = ({
                         <div className="px-4 py-6 sm:p-6 sm:pb-4">
                             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                 <div className="mt-2">
-                                    <p className="text-base text-[#1A1F36] font-bold text-center">クレジットを「1」消費します。よろしいですか？</p>
+                                    <p className="text-base text-[#1A1F36] font-bold text-center">記事を編集しますか？</p>
                                 </div>
                             </div>
                         </div>
@@ -43,7 +43,7 @@ const EditArticle: React.FC<EditArticleProps> = ({
                                 className="custom-class"
                                 onClick={onConfirm}
                                 common
-                                label="生成する"
+                                label="編集する"
                                 isLoading={isLoadiing}
                             // disabled={}
                             />

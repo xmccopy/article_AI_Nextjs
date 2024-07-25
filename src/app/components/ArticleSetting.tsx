@@ -61,7 +61,7 @@ const ArticleSetting = () => {
     const getStatusLabelBtn = (status: string) => {
         switch (status) {
             case 'Completed':
-                return '完 成';
+                return '編 集';
             case 'NotStarted':
                 return '記事生成';
             default:
@@ -76,7 +76,7 @@ const ArticleSetting = () => {
 
     const handleArticleEditConfirm = () => {
         if (selectedArticleId !== null) {
-            router.push(`/setting/article-end?articleId=${selectedArticleId}}`);
+            router.push(`/setting/article-end?articleId=${selectedArticleId}`);
         }
     }
 
