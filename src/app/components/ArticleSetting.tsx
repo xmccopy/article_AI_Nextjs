@@ -76,7 +76,7 @@ const ArticleSetting = () => {
 
     const handleArticleEditConfirm = () => {
         if (selectedArticleId !== null) {
-            router.push(`/article-end?articleId=${selectedArticleId}}`);
+            router.push(`/setting/article-end?articleId=${selectedArticleId}}`);
         }
     }
 
