@@ -16,12 +16,10 @@ const ConfigEdit: React.FC<ConfigEditProps> = ({ configcontent }) => {
         setIsActive(true);
     };
 
-    const handleSave = (newContent: string) => {
+    const handleContentChange = (newContent: string) => {
         setContent(newContent);
-        setIsActive(false);
-        // Here you would typically send the content to your backend
-    };
-
+        console.log("content updated:", newContent);
+    }
     return (
         <tr className="cursor-pointer">
             <td className="w-[500px] px-4 py-2 font-medium text-gray-900 text-[16px]">
@@ -29,7 +27,7 @@ const ConfigEdit: React.FC<ConfigEditProps> = ({ configcontent }) => {
                     <InputWindow
                         isActive={isActive}
                         initialContent={content}
-                        onSave={handleSave}
+                        onContentChange={handleContentChange}
                     />
                 ) : (
                     content
