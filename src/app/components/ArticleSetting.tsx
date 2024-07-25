@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { IoFilter } from "react-icons/io5";
-import {  FaStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
 import Button from "./Button";
 import Credit from "./modals/Credit";
+import EditArticle from "./modals/EditArticle";
 
 interface SubKeyword {
     text: string;
@@ -31,6 +32,7 @@ const ArticleSetting = () => {
     const [filterShow, setFilterShow] = useState(false);
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
 
@@ -42,8 +44,8 @@ const ArticleSetting = () => {
         switch (status) {
             case 'Completed':
                 return '完 成';
-            case 'NotStarted':
-                return '未作成';
+            // case 'NotStarted':
+            //     return '未作成';
             default:
                 return status;
         }
@@ -67,28 +69,21 @@ const ArticleSetting = () => {
         }
     }
 
-    const handleButtonClick = (keyword: Keyword) => {
-        if (keyword.status === 'NotStarted') {
-            setShowCreditModal(true);
-            setSelectedKeyword(keyword);
-        } else {
-            articleGenerate(keyword);
+    const handleButtonClick = (article: Article) => {
+        setSelectedArticleId(article.id)
+        setShowCreditModal(true);
+    }
+
+    const handleArticleEditConfirm = () => {
+        if (selectedArticleId !== null) {
+            router.push(`/article-end?articleId=${selectedArticleId}}`);
         }
     }
 
-    const handleGenerateConfirm = () => {
-        if (selectedKeyword) {
-            articleGenerate(selectedKeyword);
-        }
-    }
-
-    const handleGenerateCancel = () => {
+    const handleArticleEditCancel = () => {
         setShowCreditModal(false);
     }
 
-    const articleGenerate = (keyword: Keyword) => {
-        router.push(`/setting?keyword=${encodeURIComponent(keyword.keyword)}`);
-    };
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -125,10 +120,10 @@ const ArticleSetting = () => {
 
     return (
         <>
-            <Credit
+            <EditArticle
                 show={showCreditModal}
-                onConfirm={handleGenerateConfirm}
-                onCancel={handleGenerateCancel}
+                onConfirm={handleArticleEditConfirm}
+                onCancel={handleArticleEditCancel}
             />
             <div className="overflow-x-auto relative rounded-xl">
                 <table className="min-w-full">
@@ -197,12 +192,12 @@ const ArticleSetting = () => {
                                     <div className="flex justify-around items-center">
                                         <Button
                                             className="custom-class"
-                                            onClick={() => { handleButtonClick({ keyword: article.keyword, status: article.status }) }}
+                                            onClick={() => { handleButtonClick(article) }}
                                             common
                                             disabled={false}
                                             isLoading={false}
                                             label={getStatusLabelBtn(article.status)}
-                                            icon={FaStar}
+                                        // icon={FaStar}
                                         />
                                         {/* <FaEllipsisVertical size={20} /> */}
                                     </div>

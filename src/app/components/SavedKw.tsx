@@ -207,7 +207,6 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
 
                 setKeywords(sortedKeywords);
                 setKeywordsDL(sortedKeywords); // Update the parent component's state
-                localStorage.setItem('userId', response.data?.user?.id);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     console.log("Failed to fetch keywords:", error.response?.data || error.message);

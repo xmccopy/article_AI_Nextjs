@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import axios from "axios";
 import BgImage from "./BgImage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Toast } from 'primereact/toast';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -37,14 +37,15 @@ const ArticleEnd = () => {
     const [error, setError] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState("");
     const router = useRouter();
+    const searchParams = useSearchParams();
     const toast = useRef<Toast>(null);
+    const articleId = searchParams.get('articleId')
 
 
 
     useEffect(() => {
         const fetchContent = async () => {
             setIsLoading(true);
-            const articleId = localStorage.getItem('articleId');
             if (!articleId) {
                 throw new Error('No article Id is missing');
             }
@@ -87,7 +88,6 @@ const ArticleEnd = () => {
     }, []);
 
     const articleSaved = async () => {
-        const articleId = localStorage.getItem('articleId');
         if (!articleId) {
             setError('Article ID is missing');
             return;
@@ -101,7 +101,7 @@ const ArticleEnd = () => {
 
             await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URL!}/article/content/create/${articleId}`,
-                { content: articleConfig}, // You can add any data you need to send in the body here
+                { content: articleConfig }, // You can add any data you need to send in the body here
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -307,8 +307,8 @@ const ArticleEnd = () => {
                                         <div key={subIndex}>
                                             <h3 className="text-lg ml-4">{subtitle.text}</h3>
                                             <p className="text-base ml-8">
-                                                <ContentEdit configcontent={subtitle.content} onContentChange={(newContent) => handleSubtitleContentChange(index, subIndex, newContent)}/>
-                                                </p>
+                                                <ContentEdit configcontent={subtitle.content} onContentChange={(newContent) => handleSubtitleContentChange(index, subIndex, newContent)} />
+                                            </p>
                                         </div>
                                     ))}
                                 </div>

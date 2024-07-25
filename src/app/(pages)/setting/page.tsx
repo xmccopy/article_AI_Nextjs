@@ -80,7 +80,7 @@ const Home = () => {
         }
       );
 
-      route.push('/setting/article-end');
+      route.push(`/setting/article-end?articleId=${articleId}`);
 
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -121,7 +121,7 @@ const Home = () => {
       );
 
 
-      localStorage.setItem('articleId',response.data.id);
+      // localStorage.setItem('articleId',response.data.id);
 
       setArticleId(response.data?.id);
       setKeyowrd(response.data?.keyword);
