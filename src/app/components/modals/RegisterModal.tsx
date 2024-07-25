@@ -10,16 +10,19 @@ import Image from "next/image";
 import { Toast } from 'primereact/toast';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
+
 interface RegisterResponse {
+    token: string;
     user: {
         id: string;
         email: string;
         username: string;
-        company: string;
         credits: number;
         image: string;
     };
-    token: string;
+    backendTokens: {
+        accessToken: string;
+    }
 }
 
 const RegisterModal = () => {
@@ -71,14 +74,15 @@ const RegisterModal = () => {
                 }
             );
 
-            setUser({
-                id: response.data?.user?.id || '',
-                username: response.data?.user?.username || '',
-                email: response.data?.user?.email || '',
-                company: response.data?.user?.company || '',
-                credits: response.data?.user?.credits,
-                image: response.data?.user?.image || ''
-            });
+            // setUser({
+            //     id: response.data?.user?.id || '',
+            //     username: response.data?.user?.username || '',
+            //     email: response.data?.user?.email || '',
+            //     company: response.data?.user?.company || '',
+            //     credits: response.data?.user?.credits,
+            //     image: response.data?.user?.image || ''
+            // });
+            localStorage.setItem("token", response.data?.backendTokens.accessToken)
 
             toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
 

@@ -5,22 +5,14 @@ import SpinSetting from './Spin';
 
 const withAuth = (WrappedComponent: React.ComponentType) => {
     const Wrapper: React.FC = (props) => {
-        const { user, isLoading } = useAuth();
+        const user = useAuth();
         const router = useRouter();
-
         useEffect(() => {
-            if (!isLoading && !user) {
+            const token = localStorage.getItem('token')
+            if (!token) {
                 router.push('/login');
             }
-        }, [user, router, isLoading]);
-
-        if (isLoading) {
-            return <SpinSetting />;
-        }
-
-        if (!user) {
-            return null; // or a loading spinner or message
-        }
+        }, [router]);
 
         return <WrappedComponent {...props} />;
     };

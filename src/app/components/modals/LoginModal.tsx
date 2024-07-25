@@ -12,9 +12,7 @@ import { Toast } from 'primereact/toast';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 interface LoginResponse {
-    token: string;
     user: {
-        id: string;
         email: string;
         username: string;
         credits: number;
@@ -67,15 +65,10 @@ const LoginModal = () => {
             const accessToken = response.data.backendTokens.accessToken;
 
             localStorage.setItem('token', accessToken);
-            console.log("[][][][][", response.data?.user?.id);
             
-            localStorage.setItem('userId', response.data?.user?.id);
-
             setUser({
-                id: response.data?.user?.id || '',
                 username: response.data?.user?.username || '',
                 email: response.data?.user?.email || '',
-                company: response.data?.user?.email || '',
                 credits: response.data?.user?.credits,
                 image: response.data?.user?.image || ''
             });

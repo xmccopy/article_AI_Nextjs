@@ -24,7 +24,7 @@ const ContentEdit: React.FC<ContentEditProps> = ({ configcontent , onContentChan
     }
     return (
         <tr className="cursor-pointer">
-            <td className="w-[500px] px-4 py-2 font-medium text-gray-900 text-[16px]">
+            <td className="w-full px-4 py-2 font-medium text-gray-900 text-[16px]">
                 {isActive ? (
                     <InputWindow
                         isActive={isActive}

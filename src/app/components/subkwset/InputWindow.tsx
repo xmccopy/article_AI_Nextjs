@@ -28,7 +28,7 @@ const InputWindow: React.FC<InputWindowProps> = ({ isActive, initialContent, onC
                 value={content}
                 onChange={handleContentChange}
                 disabled={!isActive}
-                className={`w-full h-[30px] p-1 ${isActive ? 'bg-white border-[1px]' : 'bg-gray-100'} ${isActive ? 'text-black' : 'text-gray-500'}`}
+                className={`w-full h-full p-1 ${isActive ? 'bg-white' : 'bg-gray-100'} ${isActive ? 'text-black' : 'text-gray-500'}`}
             />
         </div>
     );

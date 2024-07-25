@@ -5,10 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 
 interface User {
-    id: string;
     username: string;
     email: string;
-    company: string;
     credits: number;
     image: string;
 }
@@ -48,6 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const storedToken = localStorage.getItem('token');
             if (!storedToken) {
                 setIsLoading(false); // No token, stop loading
+                // router.push('/login'); // Redirect to login
             } else {
                 fetchUserData(storedToken);
             }
@@ -70,18 +69,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    // useEffect(() => {
-    //     const storedUser = localStorage.getItem('user');
-    //     if (storedUser) {
-    //         setUser(JSON.parse(storedUser));
-    //     }
-    //     setIsLoading(false);
-    // }, []);
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+        setIsLoading(false);
+    }, []);
 
     useEffect(() => {
-        if (!user) {
+        const token = localStorage.getItem('token')
+        if (!token && !isLoading && !user) {
             router.push('/register');
         }
+
     }, [user, isLoading, router]);
 
     const setUserAndStore = (newUser: User | null) => {
@@ -93,6 +94,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+
     const updateCredits = (newCredits: number) => {
         setUser(prevUser => prevUser ? { ...prevUser, credits: newCredits } : null);
     };
@@ -100,7 +102,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logout = () => {
         setUser(null);
         localStorage.removeItem('token');
-        localStorage.removeItem('backendTokens');
         router.push('/login');
     };
 
