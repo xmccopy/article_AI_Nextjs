@@ -7,7 +7,7 @@ const Progress = () => {
     const { user } = useAuth();
     const totalCredits = 100;
 
-    const usedCreditsPercentage = user?.credits ? (user.credits / totalCredits) * 100 : 0;
+    const usedCreditsPercentage = user?.credits ? Math.min((user.credits / totalCredits) * 100, 100) : 0;
 
     return (
         <div className='flex flex-col gap-1'>
