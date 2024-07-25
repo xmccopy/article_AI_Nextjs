@@ -13,6 +13,7 @@ import { FaStar } from "react-icons/fa6";
 import DownloadBtn from "./DownloadBtn";
 import Title from "./Title";
 import ConfigEdit from "./subkwset/ConfigEdit";
+import ContentEdit from "./subkwset/ContentEdit";
 
 interface Subtitle {
     id: string; // Add an id field
@@ -100,7 +101,7 @@ const ArticleEnd = () => {
 
             await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URL!}/article/content/create/${articleId}`,
-                {}, // You can add any data you need to send in the body here
+                { content: articleConfig}, // You can add any data you need to send in the body here
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -231,6 +232,12 @@ const ArticleEnd = () => {
         }
     }
 
+    const handleSubtitleContentChange = (configIndex: number, subtitleIndex: number, newContent: string) => {
+        const updatedConfig = [...articleConfig];
+        updatedConfig[configIndex].subtitles[subtitleIndex].content = newContent;
+        setArticleConfig(updatedConfig);
+    };
+
     return (
         <>
             <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
@@ -299,7 +306,9 @@ const ArticleEnd = () => {
                                     {config.subtitles.map((subtitle, subIndex) => (
                                         <div key={subIndex}>
                                             <h3 className="text-lg ml-4">{subtitle.text}</h3>
-                                            <p className="text-base ml-8"><ConfigEdit configcontent={subtitle.content} /></p>
+                                            <p className="text-base ml-8">
+                                                <ContentEdit configcontent={subtitle.content} onContentChange={(newContent) => handleSubtitleContentChange(index, subIndex, newContent)}/>
+                                                </p>
                                         </div>
                                     ))}
                                 </div>

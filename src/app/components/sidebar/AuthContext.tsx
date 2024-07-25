@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const backendTokensString = searchParams.get('backendTokens');
         const imageUrl = searchParams.get('image');
 
-        if (userString && backendTokensString) {
+        if (userString && backendTokensString && imageUrl) {
             const userInfor = JSON.parse(decodeURIComponent(userString));
             const backendTokens = JSON.parse(decodeURIComponent(backendTokensString));
 
@@ -70,13 +70,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setIsLoading(false);
-    }, []);
+    // useEffect(() => {
+    //     const storedUser = localStorage.getItem('user');
+    //     if (storedUser) {
+    //         setUser(JSON.parse(storedUser));
+    //     }
+    //     setIsLoading(false);
+    // }, []);
 
     useEffect(() => {
         if (!user) {
