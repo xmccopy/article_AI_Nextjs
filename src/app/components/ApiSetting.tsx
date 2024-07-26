@@ -92,8 +92,34 @@ const ApiSetting: React.FC = () => {
         setData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e: FormEvent, data: ApiData, setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>) => {
-        e.preventDefault();
+    // const handleSubmit = async (e: FormEvent, data: ApiData, setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>) => {
+    //     e.preventDefault();
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         if (!token) {
+    //             throw new Error('No authentication token found');
+    //         }
+
+    //         const response = await axios.post(
+    //             `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
+    //             data,
+    //             {
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                     'Authorization': `Bearer ${token}`
+    //                 }
+    //             }
+    //         ); // Replace with your actual API endpoint
+    //         if (response.status === 200) {
+    //             toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
+    //             setIsEditMode(true);
+    //         }
+    //     } catch (error) {
+    //         toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Registration failed!', life: 2000 });
+    //     }
+    // };
+
+    const handleAddClick = async (data: ApiData, setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -109,13 +135,13 @@ const ApiSetting: React.FC = () => {
                         'Authorization': `Bearer ${token}`
                     }
                 }
-            ); // Replace with your actual API endpoint
+            );
             if (response.status === 200) {
-                toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
-                setIsEditMode(true);
+                toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Data added successfully!', life: 2000 });
+                setIsEditMode(true);  // Switch to "Update" mode
             }
         } catch (error) {
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Registration failed!', life: 2000 });
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to add data', life: 2000 });
         }
     };
 
@@ -153,7 +179,7 @@ const ApiSetting: React.FC = () => {
     return (
         <div className="flex flex-col gap-6 mt-6">
             <Toast ref={toast} />
-            <form onSubmit={(e) => handleSubmit(e, shopifyData, setIsShopifyEditMode)}>
+            <form>
                 <p className="text-[14px] text-[#1A1F36] font-bold mb-3">ShopifyのAPIキー</p>
                 <div className="flex flex-col gap-4 mt-4">
                     <input
@@ -195,18 +221,18 @@ const ApiSetting: React.FC = () => {
                         ) : (
                             <button
                                 className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
-                                type="submit"
+                                type="button"
+                                onClick={() => handleAddClick(shopifyData, setIsShopifyEditMode)}
                                 disabled={!isShopifyValid}
                             >
                                 追加する
                             </button>
                         )}
                     </div>
+
                 </div>
-
-
             </form>
-            <form onSubmit={(e) => handleSubmit(e, wordpressData, setIsWordpressEditMode)}>
+            <form>
                 <p className="text-[14px] text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
                 <div className="flex flex-col gap-4 mt-4">
                     <input
@@ -248,13 +274,15 @@ const ApiSetting: React.FC = () => {
                         ) : (
                             <button
                                 className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
-                                type="submit"
+                                type="button"
+                                onClick={() => handleAddClick(wordpressData, setIsWordpressEditMode)}
                                 disabled={!isWordpressValid}
                             >
                                 追加する
                             </button>
                         )}
                     </div>
+
                 </div>
 
             </form>
