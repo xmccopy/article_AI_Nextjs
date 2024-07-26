@@ -243,6 +243,41 @@ const Home = () => {
     ))
   }
 
+  const handleKeywordChange = async (newKeyword: string) => {
+    setKeyowrd(newKeyword);
+  };
+
+  const handleSubKeywordGenerate = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article`,
+        { keyword },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      const newArticleId = response.data.id;
+      route.push(`/setting?articleId=${newArticleId}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to generate subkeywords:", error.response?.data || error.message);
+      } else {
+        console.error("Failed to generate subkeywords:", error);
+      }
+    }
+  };
+
+  
+
   useEffect(() => {
     fetchSubKeywords(articleId);
   }, [articleId, fetchSubKeywords]);
@@ -259,7 +294,15 @@ const Home = () => {
           <Title label="記事生成" />
         </div>
         <SubTitle order="1" label="サブキーワードを設定してください" sublabel="" />
-        <KeyWordShow label={keyword} />
+        <div className="flex items-center justify-start gap-6">
+          <KeyWordShow label={keyword} onKeywordChange={handleKeywordChange} />
+          <Button
+            className="custom-class transition-all"
+            onClick={handleSubKeywordGenerate}
+            common
+            label="Subkeyword Generate"
+          />
+        </div>
 
         <form action="" className="mt-4" onSubmit={addKeyword}>
           <div className="text-[#252936]">
