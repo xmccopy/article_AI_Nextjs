@@ -8,6 +8,7 @@ import axios from 'axios';
 import Button from "./Button";
 import Credit from "./modals/Credit";
 import EditArticle from "./modals/EditArticle";
+import { FaEllipsisVertical } from "react-icons/fa6";
 
 interface SubKeyword {
     text: string;
@@ -35,6 +36,7 @@ const ArticleSetting = () => {
     const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
     const [showCreditModal, setShowCreditModal] = useState(false);
     const [selectedKeyword, setSelectedKeyword] = useState<Keyword | null>(null);
+    const [showDropdown, setShowDropdown] = useState<number | null>(null);
 
     const toggleShow = useCallback(() => {
         setFilterShow(filterShow => !filterShow);
@@ -84,6 +86,67 @@ const ArticleSetting = () => {
         setShowCreditModal(false);
     }
 
+    const handleEllipsisClick = (articleId: number) => {
+        setShowDropdown(prevState => prevState === articleId ? null : articleId);
+    }
+
+    const wordPressPost = async (articleId: number) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found!');
+            }
+
+            await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/post/wordpress/${articleId}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            )
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log("Failed to post article:", error.response?.data || error.message);
+            } else {
+                console.log("Failed to post article:", error);
+            }
+        }
+    }
+
+    const shopifyPost = (articleId: number) => {
+
+    }
+
+    const handleDeleteArticle = async (articleId: number) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found!');
+            }
+    
+            await axios.delete(
+                `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+    
+            // Remove the deleted article from the state
+            setArticles(prevArticles => prevArticles.filter(article => article.id !== articleId));
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.log("Failed to delete article:", error.response?.data || error.message);
+            } else {
+                console.log("Failed to delete article:", error);
+            }
+        }
+    }
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -199,7 +262,36 @@ const ArticleSetting = () => {
                                             label={getStatusLabelBtn(article.status)}
                                         // icon={FaStar}
                                         />
-                                        {/* <FaEllipsisVertical size={20} /> */}
+                                        <FaEllipsisVertical 
+                                            className="relatvie cursor-pointer" 
+                                            size={20}
+                                            onClick={() => handleEllipsisClick(article.id)}
+                                        />
+                                        {showDropdown === article.id && (
+                                            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-10">
+                                                <ul>
+                                                    <li
+                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        onClick={() => wordPressPost(article.id)}
+                                                    >
+                                                        WordPress連携
+                                                    </li>
+                                                    <li
+                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        onClick={() => shopifyPost(article.id)}
+                                                    >
+                                                        Shopify連携
+                                                    </li>
+                                                    <hr/>
+                                                    <li
+                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        onClick={() => handleDeleteArticle(article.id)}
+                                                    >
+                                                        削 除
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
                                 </td>
                             </tr>
