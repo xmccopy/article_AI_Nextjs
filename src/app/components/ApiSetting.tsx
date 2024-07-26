@@ -194,11 +194,11 @@ const ApiSetting: React.FC = () => {
                             </button>
                         ) : (
                             <button
-                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
-                                type="button"
-                                onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
+                                type="submit"
+                                disabled={!isShopifyValid}
                             >
-                                編集する
+                                追加する
                             </button>
                         )}
                     </div>
@@ -247,11 +247,11 @@ const ApiSetting: React.FC = () => {
                             </button>
                         ) : (
                             <button
-                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
-                                type="button"
-                                onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
+                                type="submit"
+                                disabled={!isWordpressValid}
                             >
-                                編集する
+                                追加する
                             </button>
                         )}
                     </div>
@@ -263,5 +263,3 @@ const ApiSetting: React.FC = () => {
 };
 
 export default ApiSetting;
-
-
