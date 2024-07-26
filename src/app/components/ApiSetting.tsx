@@ -55,15 +55,10 @@ const ApiSetting: React.FC = () => {
             );
             if (response.status === 200) {
                 const data = response.data;
-                setShopifyData({
-                    apiUsername: data.shopify.apiUsername,
-                    apiPassword: data.shopify.apiPassword,
-                    siteUrl: data.shopify.siteUrl
-                });
                 setWordpressData({
-                    apiUsername: data.wordpress.apiUsername,
-                    apiPassword: data.wordpress.apiPassword,
-                    siteUrl: data.wordpress.siteUrl
+                    apiUsername: data.wordpressApi.apiUsername,
+                    apiPassword: data.wordpressApi.apiPassword,
+                    siteUrl: data.wordpressApi.siteUrl
                 });
                 setIsShopifyEditMode(true);
                 setIsWordpressEditMode(true);
@@ -212,7 +207,7 @@ const ApiSetting: React.FC = () => {
                                 type="button"
                                 onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
                             >
-                                更新する 
+                                更新する
                             </button>
                         ) : (
                             <button
@@ -232,4 +227,4 @@ const ApiSetting: React.FC = () => {
 
 export default ApiSetting;
 
-編集する
+
