@@ -25,9 +25,8 @@ const ApiSetting: React.FC = () => {
     });
     const [isShopifyValid, setIsShopifyValid] = useState<boolean>(false);
     const [isWordpressValid, setIsWordpressValid] = useState<boolean>(false);
-    const [isShopifyEditMode, setIsShopifyEditMode] = useState<boolean>(true);
-    const [isWordpressEditMode, setIsWordpressEditMode] = useState<boolean>(true);
-
+    const [isShopifyEditMode, setIsShopifyEditMode] = useState<boolean>(false);
+    const [isWordpressEditMode, setIsWordpressEditMode] = useState<boolean>(false);
     const toast = useRef<Toast>(null);
 
     useEffect(() => {
@@ -40,42 +39,42 @@ const ApiSetting: React.FC = () => {
         setIsWordpressValid(apiUsername !== '' && apiPassword !== '' && siteUrl !== '');
     }, [wordpressData]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('No authentication token found');
-                }
-                const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-                if (response.status === 200) {
-                    const data = response.data;
-                    setShopifyData({
-                        apiUsername: data.shopify.apiUsername,
-                        apiPassword: data.shopify.apiPassword,
-                        siteUrl: data.shopify.siteUrl
-                    });
-                    setWordpressData({
-                        apiUsername: data.wordpress.apiUsername,
-                        apiPassword: data.wordpress.apiPassword,
-                        siteUrl: data.wordpress.siteUrl
-                    });
-                    setIsShopifyEditMode(false);
-                    setIsWordpressEditMode(false);
-                }
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
-                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch data', life: 2000 });
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
             }
-        };
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                const data = response.data;
+                setShopifyData({
+                    apiUsername: data.shopify.apiUsername,
+                    apiPassword: data.shopify.apiPassword,
+                    siteUrl: data.shopify.siteUrl
+                });
+                setWordpressData({
+                    apiUsername: data.wordpress.apiUsername,
+                    apiPassword: data.wordpress.apiPassword,
+                    siteUrl: data.wordpress.siteUrl
+                });
+                setIsShopifyEditMode(true);
+                setIsWordpressEditMode(true);
+            }
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch data', life: 2000 });
+        }
+    };
 
+    useEffect(() => {
         fetchData();
     }, []);
 
@@ -107,7 +106,7 @@ const ApiSetting: React.FC = () => {
             ); // Replace with your actual API endpoint
             if (response.status === 200) {
                 toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
-                setIsEditMode(false);
+                setIsEditMode(true);
             }
         } catch (error) {
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Registration failed!', life: 2000 });
@@ -115,7 +114,11 @@ const ApiSetting: React.FC = () => {
     };
 
     const handleEditModeToggle = (setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>, isEditMode: boolean) => {
-        setIsEditMode(!isEditMode);
+        if (isEditMode) {
+            fetchData();
+        } else {
+            setIsEditMode(true);
+        }
     };
 
     return (
@@ -154,19 +157,19 @@ const ApiSetting: React.FC = () => {
                         />
                         {isShopifyEditMode ? (
                             <button
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold`}
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
+                            >
+                                更新する
+                            </button>
+                        ) : (
+                            <button
                                 className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
                                 type="submit"
                                 disabled={!isShopifyValid}
                             >
                                 追加する
-                            </button>
-                        ) : (
-                            <button
-                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
-                                type="button"
-                                onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
-                            >
-                                編集する
                             </button>
                         )}
                     </div>
@@ -205,19 +208,19 @@ const ApiSetting: React.FC = () => {
                         />
                         {isWordpressEditMode ? (
                             <button
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold`}
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
+                            >
+                                更新する 
+                            </button>
+                        ) : (
+                            <button
                                 className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
                                 type="submit"
                                 disabled={!isWordpressValid}
                             >
                                 追加する
-                            </button>
-                        ) : (
-                            <button
-                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
-                                type="button"
-                                onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
-                            >
-                                編集する
                             </button>
                         )}
                     </div>
@@ -228,3 +231,5 @@ const ApiSetting: React.FC = () => {
 };
 
 export default ApiSetting;
+
+編集する
