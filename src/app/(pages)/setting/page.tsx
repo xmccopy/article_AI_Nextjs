@@ -318,15 +318,16 @@ const Home = () => {
             <Title label="記事生成" />
           </div>
           <SubTitle order="1" label="サブキーワードを設定してください" sublabel="" />
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-start gap-6">
             <KeyWordShow label={keyword} onKeywordChange={handleKeywordChange} />
             <Button
-              className="custom-class transition-all"
+              className="custom-class transition-all mt-4"
               onClick={handleSubKwBtn}
               common
               label="サブキーワードを生成する"
               isLoading={isSubKwGenerate}
               icon={FaStar}
+              disabled={!keyword.trim()}
             />
           </div>
 

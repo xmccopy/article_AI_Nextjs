@@ -1,8 +1,10 @@
 'use client'
 
 import axios from "axios";
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+import { Toast } from 'primereact/toast';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
 interface Prompt {
     id: string;
     prompt: string;
@@ -13,6 +15,7 @@ interface Prompt {
 
 const PromptSetting = () => {
     const [prompts, setPrompts] = useState<Prompt[]>([]);
+    const toast = useRef<Toast>(null);
 
     useEffect(() => {
         const fetchPrompts = async () => {
@@ -62,10 +65,14 @@ const PromptSetting = () => {
                 prevPrompts.map(p => p.id === id ? { ...p, prompt: newPrompt } : p)
             );
 
+            if (toast.current) {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000 });
+            }
             console.log(`Prompt updated successfully`);
+
         } catch (error) {
             console.error(`Failed to update prompt:`, error);
-            // Handle error (e.g., show error message to user)
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'An error occurred during registration', life: 2000 });
         }
     };
 
