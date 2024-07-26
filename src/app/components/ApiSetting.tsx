@@ -25,6 +25,8 @@ const ApiSetting: React.FC = () => {
     });
     const [isShopifyValid, setIsShopifyValid] = useState<boolean>(false);
     const [isWordpressValid, setIsWordpressValid] = useState<boolean>(false);
+    const [isShopifyEditMode, setIsShopifyEditMode] = useState<boolean>(true);
+    const [isWordpressEditMode, setIsWordpressEditMode] = useState<boolean>(true);
 
     const toast = useRef<Toast>(null);
 
@@ -46,7 +48,7 @@ const ApiSetting: React.FC = () => {
         setData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleSubmit = async (e: FormEvent, data: ApiData) => {
+    const handleSubmit = async (e: FormEvent, data: ApiData, setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>) => {
         e.preventDefault();
         try {
 
@@ -67,6 +69,7 @@ const ApiSetting: React.FC = () => {
             ); // Replace with your actual API endpoint
             if (response.status === 200) {
                 toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Registration successful!', life: 2000 });
+                setIsEditMode(false);
             }
         } catch (error) {
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Registration failed!', life: 2000 });
@@ -75,7 +78,8 @@ const ApiSetting: React.FC = () => {
 
     return (
         <div className="flex flex-col gap-6 mt-6">
-            <form onSubmit={(e) => handleSubmit(e, shopifyData)}>
+            <Toast ref={toast} />
+            <form onSubmit={(e) => handleSubmit(e, shopifyData, setIsShopifyEditMode)}>
                 <p className="text-[14px] text-[#1A1F36] font-bold mb-3">ShopifyのAPIキー</p>
                 <div className="flex flex-col gap-4 mt-4">
                     <input
@@ -85,6 +89,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiUsername"
+                        disabled={!isShopifyEditMode}
                     />
                     <input
                         type="password"
@@ -93,6 +98,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiPassword"
+                        disabled={!isShopifyEditMode}
                     />
                     <div className="flex gap-4 sm:flex-row flex-col">
                         <input
@@ -102,18 +108,19 @@ const ApiSetting: React.FC = () => {
                             onChange={(e) => handleInputChange(e, setShopifyData)}
                             className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                             placeholder="siteUrl"
+                            disabled={!isShopifyEditMode}
                         />
                         <button
-                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
+                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && isShopifyEditMode && 'opacity-50 cursor-not-allowed'}`}
                             type="submit"
-                            disabled={!isShopifyValid}
+                            disabled={!isShopifyValid && isShopifyEditMode}
                         >
-                            追加する
+                            {isShopifyEditMode ? '追加する' : '編集する'}
                         </button>
                     </div>
                 </div>
             </form>
-            <form onSubmit={(e) => handleSubmit(e, wordpressData)}>
+            <form onSubmit={(e) => handleSubmit(e, wordpressData, setIsWordpressEditMode)}>
                 <p className="text-[14px] text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
                 <div className="flex flex-col gap-4 mt-4">
                     <input
@@ -123,6 +130,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiUsername"
+                        disabled={!isWordpressEditMode}
                     />
                     <input
                         type="password"
@@ -131,6 +139,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiPassword"
+                        disabled={!isWordpressEditMode}
                     />
                     <div className="flex gap-4 flex-col sm:flex-row">
                         <input
@@ -140,13 +149,14 @@ const ApiSetting: React.FC = () => {
                             onChange={(e) => handleInputChange(e, setWordpressData)}
                             className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                             placeholder="siteUrl"
+                            disabled={!isWordpressEditMode}
                         />
                         <button
-                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
+                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && isWordpressEditMode && 'opacity-50 cursor-not-allowed'}`}
                             type="submit"
-                            disabled={!isWordpressValid}
+                            disabled={!isWordpressValid && isWordpressEditMode}
                         >
-                            追加する
+                            {isWordpressEditMode ? '追加する' : '編集'}
                         </button>
                     </div>
                 </div>
