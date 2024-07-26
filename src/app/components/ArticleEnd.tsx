@@ -154,7 +154,6 @@ const ArticleEnd = () => {
 
     const iamgeAgainGenerate = async () => {
         setIsImageLoading(true)
-        const articleId = localStorage.getItem('articleId');
         if (!articleId) {
             setError('Article ID is missing');
             return;
