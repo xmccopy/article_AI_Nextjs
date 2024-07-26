@@ -5,13 +5,6 @@ import Title from "../../components/Title";
 import withAuth from "@/app/components/withAuth";
 import ArticleSetting from "@/app/components/ArticleSetting";
 
-interface Keyword {
-    text: string;
-    keywordIdeaMetrics: {
-        avgMonthlySearches: string;
-    };
-    saved: number;
-}
 
 const Home = () => {
 

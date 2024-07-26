@@ -16,6 +16,8 @@ import { useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react";
 import withAuth from "@/app/components/withAuth";
 import ConfigManager from "@/app/components/ConfigManager";
+import { FaStar } from "react-icons/fa6";
+import SubKWGenerate from "@/app/components/modals/SubKWGenerate";
 
 interface SubKeyword {
   text: string;
@@ -39,9 +41,11 @@ const Home = () => {
   const searchParams = useSearchParams();
   const [newKeyword, setNewKeyword] = useState('')
   const [keyword, setKeyowrd] = useState('');
+  const [showSubKWGenerate, setShowSubKWGenerate] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setBtnIsLoading] = useState(false);
+  const [isSubKwGenerate, sestIsSubKwGenerate] = useState(false);
   const [isBtnTitleLoading, setBtnTitleIsLoading] = useState(false);
   const [isArticleEndLoading, setIsArticleEndLoading] = useState(false);
 
@@ -248,6 +252,7 @@ const Home = () => {
   };
 
   const handleSubKeywordGenerate = async () => {
+    sestIsSubKwGenerate(true);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -273,10 +278,23 @@ const Home = () => {
       } else {
         console.error("Failed to generate subkeywords:", error);
       }
+    } finally {
+      sestIsSubKwGenerate(false);
     }
   };
 
-  
+  const handleSubKwBtn = () => {
+    setShowSubKWGenerate(true);
+  }
+
+  const handleSubKwConfirm =() => {
+    handleSubKeywordGenerate();
+    setShowSubKWGenerate(false);
+  }
+
+  const handleSubKwCancel = () => {
+    setShowSubKWGenerate(false);
+  }
 
   useEffect(() => {
     fetchSubKeywords(articleId);
@@ -288,153 +306,162 @@ const Home = () => {
   }, [searchParams]);
 
   return (
-    <Container>
-      <div className="flex flex-col gap-5">
-        <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row">
-          <Title label="記事生成" />
-        </div>
-        <SubTitle order="1" label="サブキーワードを設定してください" sublabel="" />
-        <div className="flex items-center justify-start gap-6">
-          <KeyWordShow label={keyword} onKeywordChange={handleKeywordChange} />
-          <Button
-            className="custom-class transition-all"
-            onClick={handleSubKeywordGenerate}
-            common
-            label="Subkeyword Generate"
-          />
-        </div>
-
-        <form action="" className="mt-4" onSubmit={addKeyword}>
-          <div className="text-[#252936]">
-            <p className="text-[14px] mb-2 font-medium">サブキーワード</p>
-            <div className="bg-[#F5F8F8] w-full p-6 rounded-lg">
-              <div className="flex flex-wrap gap-6">
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="blue" strokeWidth="4" />
-                      <path className="opacity-75" fill="blue" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    サブキーワード 生成中...
-                  </div>
-                ) : (
-                  Array.isArray(subKeywords) && subKeywords.length > 0 ? (
-                    subKeywords.map((subKeyword, index) => (
-                      <SubKwSetting
-                        key={index}
-                        label={subKeyword.text}
-                        selected={subKeyword.selected}
-                        onChange={() => toggleSubKeyword(index)}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-gray-500">サブキーワードがありません。</div>
-                  )
-                )}
-              </div>
-              <div className="flex gap-4 mt-4">
-                <input
-                  type="text"
-                  className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                  value={newKeyword}
-                  onChange={handleInputChange}
-                />
-                <button className="text-[14px] text-[#5469D4] min-w-max" type="submit">追加する</button>
-              </div>
-            </div>
+    <>
+      <SubKWGenerate
+         show={showSubKWGenerate}
+         onConfirm={handleSubKwConfirm}
+         onCancel={handleSubKwCancel}
+      />
+      <Container>
+        <div className="flex flex-col gap-5">
+          <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row">
+            <Title label="記事生成" />
           </div>
-          <div className="flex text-gray-900 sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
-            <div title={
-              !isAnySubKeywordSelected()
-                ? "サブキーワードを選択してください"
-                : titleGenerationLimit <= 0
-                  ? "タイトル生成の上限に達しました"
-                  : ""
-            }>
-              <Button
-                className="custom-class transition-all"
-                onClick={updateSubKeywords}
-                common
-                label="タイトルを生成する"
-                disabled={isButtonDisabled()}
-                isLoading={isBtnLoading}
-                titleLimit={titleGenerationLimit}
-              />
-            </div>
-            <p className={`text-[14px] text-gray-900 ${titleGenerationLimit <= 1 ? 'text-red-500' : ''}`}>
-              {isButtonDisabled()
-                ? titleGenerationLimit <= 0
-                  ? "タイトル生成の上限に達しました。"
-                  : "サブキーワードを選択してください。"
-                : `※残り${titleGenerationLimit}回生成できます。`
-              }
-            </p>
-          </div>
-        </form>
-
-        <SubTitle order="2" label="タイトルを設定してください" sublabel="" />
-        <div className="text-[#3C4257]">
-          <p className="text-[14px] mb-3 font-medium">タイトル案</p>
-          <TitleContainer
-            generateTitles={generateTitles}
-            setFinalTitle={setFinalTitle}
-            finalTitle={finalTitle}
-          />
-          <div className="flex sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
+          <SubTitle order="1" label="サブキーワードを設定してください" sublabel="" />
+          <div className="flex items-center justify-center gap-6">
+            <KeyWordShow label={keyword} onKeywordChange={handleKeywordChange} />
             <Button
               className="custom-class transition-all"
-              onClick={updateTitles}
+              onClick={handleSubKwBtn}
               common
-              label="タイトルを生成する"
-              disabled={isTitleButtonDisabled()}
-              isLoading={isBtnTitleLoading}
-              titleLimit={titleFinalGenerationLimit}
+              label="サブキーワードを生成する"
+              isLoading={isSubKwGenerate}
+              icon={FaStar}
             />
-            <p className={`text-[14px] ${titleFinalGenerationLimit <= 1 ? 'text-red-500' : ''}`}>
-              {isButtonDisabled()
-                ? finalTitle.trim() === ''
-                  ? "タイトルを入力してください。"
-                  : "タイトル生成の上限に達しました。"
-                : `※残り${titleFinalGenerationLimit}回生成できます。`
-              }
-            </p>
           </div>
-        </div>
 
-        <SubTitle order="3" label="記事構成を作成してください" sublabel="" />
-        <div className="flex sm:flex-row flex-col">
-          <FinalSet
-            keyword={keyword}
-            subkeyword={subKeywords}
-            title={finalTitle}
-          />
-          <div className="w-full sm:pl-4 mt-4 sm:mt-0">
-            <p className="text-[14px] mb-4">記事構成</p>
-            <div className="overflow-x-auto">
-              <table className="divide-y-2 divide-gray-200 bg-white text-sm">
-                <thead className=" bg-gray-200 text-left">
-                  <tr>
-                    <th className="whitespace-nowrap px-4 py-2  font-bold text-gray-900 text-xs text-left">導入文</th>
-                    <th className="whitespace-nowrap px-4 py-2  h-fit font-bold text-gray-900 text-xs text-left">リード文</th>
-                    <th className="whitespace-nowrap px-4 py-2 w-full font-bold text-gray-900 text-xs text-left"></th>
-                  </tr>
-                </thead>
-              </table>
-              <ConfigManager initialConfigs={finalConfig} />
+          <form action="" className="mt-4" onSubmit={addKeyword}>
+            <div className="text-[#252936]">
+              <p className="text-[14px] mb-2 font-medium">サブキーワード</p>
+              <div className="bg-[#F5F8F8] w-full p-6 rounded-lg">
+                <div className="flex flex-wrap gap-6">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="blue" strokeWidth="4" />
+                        <path className="opacity-75" fill="blue" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      サブキーワード 生成中...
+                    </div>
+                  ) : (
+                    Array.isArray(subKeywords) && subKeywords.length > 0 ? (
+                      subKeywords.map((subKeyword, index) => (
+                        <SubKwSetting
+                          key={index}
+                          label={subKeyword.text}
+                          selected={subKeyword.selected}
+                          onChange={() => toggleSubKeyword(index)}
+                        />
+                      ))
+                    ) : (
+                      <div className="text-gray-500">サブキーワードがありません。</div>
+                    )
+                  )}
+                </div>
+                <div className="flex gap-4 mt-4">
+                  <input
+                    type="text"
+                    className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                    value={newKeyword}
+                    onChange={handleInputChange}
+                  />
+                  <button className="text-[14px] text-[#5469D4] min-w-max" type="submit">追加する</button>
+                </div>
+              </div>
+            </div>
+            <div className="flex text-gray-900 sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
+              <div title={
+                !isAnySubKeywordSelected()
+                  ? "サブキーワードを選択してください"
+                  : titleGenerationLimit <= 0
+                    ? "タイトル生成の上限に達しました"
+                    : ""
+              }>
+                <Button
+                  className="custom-class transition-all"
+                  onClick={updateSubKeywords}
+                  common
+                  label="タイトルを生成する"
+                  disabled={isButtonDisabled()}
+                  isLoading={isBtnLoading}
+                  titleLimit={titleGenerationLimit}
+                />
+              </div>
+              <p className={`text-[14px] text-gray-900 ${titleGenerationLimit <= 1 ? 'text-red-500' : ''}`}>
+                {isButtonDisabled()
+                  ? titleGenerationLimit <= 0
+                    ? "タイトル生成の上限に達しました。"
+                    : "サブキーワードを選択してください。"
+                  : `※残り${titleGenerationLimit}回生成できます。`
+                }
+              </p>
+            </div>
+          </form>
+
+          <SubTitle order="2" label="タイトルを設定してください" sublabel="" />
+          <div className="text-[#3C4257]">
+            <p className="text-[14px] mb-3 font-medium">タイトル案</p>
+            <TitleContainer
+              generateTitles={generateTitles}
+              setFinalTitle={setFinalTitle}
+              finalTitle={finalTitle}
+            />
+            <div className="flex sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
+              <Button
+                className="custom-class transition-all"
+                onClick={updateTitles}
+                common
+                label="タイトルを生成する"
+                disabled={isTitleButtonDisabled()}
+                isLoading={isBtnTitleLoading}
+                titleLimit={titleFinalGenerationLimit}
+              />
+              <p className={`text-[14px] ${titleFinalGenerationLimit <= 1 ? 'text-red-500' : ''}`}>
+                {isButtonDisabled()
+                  ? finalTitle.trim() === ''
+                    ? "タイトルを入力してください。"
+                    : "タイトル生成の上限に達しました。"
+                  : `※残り${titleFinalGenerationLimit}回生成できます。`
+                }
+              </p>
             </div>
           </div>
+
+          <SubTitle order="3" label="記事構成を作成してください" sublabel="" />
+          <div className="flex sm:flex-row flex-col">
+            <FinalSet
+              keyword={keyword}
+              subkeyword={subKeywords}
+              title={finalTitle}
+            />
+            <div className="w-full sm:pl-4 mt-4 sm:mt-0">
+              <p className="text-[14px] mb-4">記事構成</p>
+              <div className="overflow-x-auto">
+                <table className="divide-y-2 divide-gray-200 bg-white text-sm">
+                  <thead className=" bg-gray-200 text-left">
+                    <tr>
+                      <th className="whitespace-nowrap px-4 py-2  font-bold text-gray-900 text-xs text-left">導入文</th>
+                      <th className="whitespace-nowrap px-4 py-2  h-fit font-bold text-gray-900 text-xs text-left">リード文</th>
+                      <th className="whitespace-nowrap px-4 py-2 w-full font-bold text-gray-900 text-xs text-left"></th>
+                    </tr>
+                  </thead>
+                </table>
+                <ConfigManager initialConfigs={finalConfig} />
+              </div>
+            </div>
+          </div>
+          <div className="flex sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
+            <Button
+              className="custom-class"
+              onClick={handleArticleEnd}
+              common
+              label="記事を生成する"
+              isLoading={isArticleEndLoading}
+            />
+          </div>
         </div>
-        <div className="flex sm:flex-row items-center sm:justify-start gap-4 flex-col justify-center my-4">
-          <Button
-            className="custom-class"
-            onClick={handleArticleEnd}
-            common
-            label="記事を生成する"
-            isLoading={isArticleEndLoading}
-          />
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 }
 
