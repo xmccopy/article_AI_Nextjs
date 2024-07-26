@@ -83,7 +83,6 @@ const StripePlan = () => {
         }
     };
 
-    
     useEffect(() => {
         const fetchPlan = async () => {
             setIsLoading(true);

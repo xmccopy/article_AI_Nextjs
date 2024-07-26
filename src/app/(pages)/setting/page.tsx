@@ -28,7 +28,6 @@ interface Subtitle {
   text: string;
   id: string; // Add an id field
 }
-
 interface Config {
   tag: string;
   text: string;
