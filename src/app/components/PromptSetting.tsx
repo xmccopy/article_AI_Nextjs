@@ -105,7 +105,7 @@ const PromptSetting = () => {
                                 className="text-[14px] text-[#5469D4] min-w-max"
                                 type="button"
                             >
-                                更新する??
+                                更新する
                             </button>
                         </div>
                     </div>

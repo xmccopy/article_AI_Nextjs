@@ -55,19 +55,30 @@ const ApiSetting: React.FC = () => {
             );
             if (response.status === 200) {
                 const data = response.data;
-                setWordpressData({
-                    apiUsername: data.wordpressApi.apiUsername,
-                    apiPassword: data.wordpressApi.apiPassword,
-                    siteUrl: data.wordpressApi.siteUrl
-                });
-                setIsShopifyEditMode(true);
-                setIsWordpressEditMode(true);
+                if (data.wordpressApi && data.shopifyApi) {
+                    setWordpressData({
+                        apiUsername: data.wordpressApi.apiUsername,
+                        apiPassword: data.wordpressApi.apiPassword,
+                        siteUrl: data.wordpressApi.siteUrl
+                    });
+                    setShopifyData({
+                        apiUsername: data.shopifyApi.apiUsername,
+                        apiPassword: data.shopifyApi.apiPassword,
+                        siteUrl: data.shopifyApi.siteUrl
+                    });
+                    setIsShopifyEditMode(true);
+                    setIsWordpressEditMode(true);
+                } else {
+                    setIsShopifyEditMode(false);
+                    setIsWordpressEditMode(false);
+                }
             }
         } catch (error) {
             console.error('Failed to fetch data:', error);
             toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch data', life: 2000 });
         }
     };
+
 
     useEffect(() => {
         fetchData();
@@ -108,11 +119,34 @@ const ApiSetting: React.FC = () => {
         }
     };
 
-    const handleEditModeToggle = (setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>, isEditMode: boolean) => {
+    const handleEditModeToggle = async (setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>, isEditMode: boolean) => {
         if (isEditMode) {
-            fetchData();
+            setIsEditMode(false);  // Change to "Refresh" mode
         } else {
-            setIsEditMode(true);
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const updateData = isShopifyEditMode ? shopifyData : wordpressData;
+                const response = await axios.patch(
+                    `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
+                    updateData,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+                if (response.status === 200) {
+                    toast.current?.show({ severity: 'success', summary: 'Success', detail: 'Data updated successfully!', life: 2000 });
+                    fetchData();  // Refresh data after successful update
+                }
+            } catch (error) {
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to update data', life: 2000 });
+            }
         }
     };
 
@@ -129,7 +163,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiUsername"
-                        disabled={!isShopifyEditMode}
+                        disabled={isShopifyEditMode}
                     />
                     <input
                         type="password"
@@ -138,21 +172,21 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setShopifyData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiPassword"
-                        disabled={!isShopifyEditMode}
+                        disabled={isShopifyEditMode}
+                    />
+                    <input
+                        type="text"
+                        name="siteUrl"
+                        value={shopifyData.siteUrl}
+                        onChange={(e) => handleInputChange(e, setShopifyData)}
+                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                        placeholder="siteUrl"
+                        disabled={isShopifyEditMode}
                     />
                     <div className="flex gap-4 sm:flex-row flex-col">
-                        <input
-                            type="text"
-                            name="siteUrl"
-                            value={shopifyData.siteUrl}
-                            onChange={(e) => handleInputChange(e, setShopifyData)}
-                            className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                            placeholder="siteUrl"
-                            disabled={!isShopifyEditMode}
-                        />
                         {isShopifyEditMode ? (
                             <button
-                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold`}
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
                                 type="button"
                                 onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
                             >
@@ -160,15 +194,17 @@ const ApiSetting: React.FC = () => {
                             </button>
                         ) : (
                             <button
-                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
-                                type="submit"
-                                disabled={!isShopifyValid}
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
                             >
-                                追加する
+                                編集する
                             </button>
                         )}
                     </div>
                 </div>
+
+
             </form>
             <form onSubmit={(e) => handleSubmit(e, wordpressData, setIsWordpressEditMode)}>
                 <p className="text-[14px] text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
@@ -180,7 +216,7 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiUsername"
-                        disabled={!isWordpressEditMode}
+                        disabled={isWordpressEditMode}
                     />
                     <input
                         type="password"
@@ -189,21 +225,21 @@ const ApiSetting: React.FC = () => {
                         onChange={(e) => handleInputChange(e, setWordpressData)}
                         className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
                         placeholder="Input apiPassword"
-                        disabled={!isWordpressEditMode}
+                        disabled={isWordpressEditMode}
+                    />
+                    <input
+                        type="text"
+                        name="siteUrl"
+                        value={wordpressData.siteUrl}
+                        onChange={(e) => handleInputChange(e, setWordpressData)}
+                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                        placeholder="siteUrl"
+                        disabled={isWordpressEditMode}
                     />
                     <div className="flex gap-4 flex-col sm:flex-row">
-                        <input
-                            type="text"
-                            name="siteUrl"
-                            value={wordpressData.siteUrl}
-                            onChange={(e) => handleInputChange(e, setWordpressData)}
-                            className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
-                            placeholder="siteUrl"
-                            disabled={!isWordpressEditMode}
-                        />
                         {isWordpressEditMode ? (
                             <button
-                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold`}
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
                                 type="button"
                                 onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
                             >
@@ -211,15 +247,16 @@ const ApiSetting: React.FC = () => {
                             </button>
                         ) : (
                             <button
-                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
-                                type="submit"
-                                disabled={!isWordpressValid}
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
                             >
-                                追加する
+                                編集する
                             </button>
                         )}
                     </div>
                 </div>
+
             </form>
         </div>
     );
