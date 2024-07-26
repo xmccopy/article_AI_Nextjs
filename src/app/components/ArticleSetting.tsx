@@ -88,6 +88,7 @@ const ArticleSetting = () => {
 
     const handleEllipsisClick = (articleId: number) => {
         setShowDropdown(prevState => prevState === articleId ? null : articleId);
+        console.log("``````````````````````", articleId)
     }
 
     const wordPressPost = async (articleId: number) => {
@@ -252,7 +253,7 @@ const ArticleSetting = () => {
                                     <Button onClick={() => { }} outline roundBtn className={getStatusStyle(article.status)} label={getStatusLabel(article.status)} />
                                 </td>
                                 <td className="whitespace-nowrap py-2 ml-8">
-                                    <div className="flex justify-around items-center">
+                                    <div className="flex justify-around items-center relative">
                                         <Button
                                             className="custom-class"
                                             onClick={() => { handleButtonClick(article) }}
@@ -263,28 +264,28 @@ const ArticleSetting = () => {
                                         // icon={FaStar}
                                         />
                                         <FaEllipsisVertical 
-                                            className="relatvie cursor-pointer" 
+                                            className="cursor-pointer" 
                                             size={20}
                                             onClick={() => handleEllipsisClick(article.id)}
                                         />
                                         {showDropdown === article.id && (
-                                            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-10">
+                                            <div className="absolute right-8 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
                                                 <ul>
                                                     <li
-                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
                                                         onClick={() => wordPressPost(article.id)}
                                                     >
                                                         WordPress連携
                                                     </li>
                                                     <li
-                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
                                                         onClick={() => shopifyPost(article.id)}
                                                     >
                                                         Shopify連携
                                                     </li>
                                                     <hr/>
                                                     <li
-                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
                                                         onClick={() => handleDeleteArticle(article.id)}
                                                     >
                                                         削 除
