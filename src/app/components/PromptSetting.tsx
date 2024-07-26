@@ -80,6 +80,7 @@ const PromptSetting = () => {
 
     return (
         <div className="flex flex-col gap-6 mt-6">
+            <Toast ref={toast} />
             {[
                 { label: "Title prompt", type: "title" },
                 { label: "Config prompt", type: "config" },

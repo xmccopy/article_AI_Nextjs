@@ -40,6 +40,45 @@ const ApiSetting: React.FC = () => {
         setIsWordpressValid(apiUsername !== '' && apiPassword !== '' && siteUrl !== '');
     }, [wordpressData]);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL!}/wp-api`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+                if (response.status === 200) {
+                    const data = response.data;
+                    setShopifyData({
+                        apiUsername: data.shopify.apiUsername,
+                        apiPassword: data.shopify.apiPassword,
+                        siteUrl: data.shopify.siteUrl
+                    });
+                    setWordpressData({
+                        apiUsername: data.wordpress.apiUsername,
+                        apiPassword: data.wordpress.apiPassword,
+                        siteUrl: data.wordpress.siteUrl
+                    });
+                    setIsShopifyEditMode(false);
+                    setIsWordpressEditMode(false);
+                }
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                toast.current?.show({ severity: 'error', summary: 'Error', detail: 'Failed to fetch data', life: 2000 });
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement>,
         setData: React.Dispatch<React.SetStateAction<ApiData>>
@@ -51,7 +90,6 @@ const ApiSetting: React.FC = () => {
     const handleSubmit = async (e: FormEvent, data: ApiData, setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>) => {
         e.preventDefault();
         try {
-
             const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error('No authentication token found');

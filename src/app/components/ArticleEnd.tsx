@@ -239,6 +239,7 @@ const ArticleEnd = () => {
 
     return (
         <>
+            <Toast ref={toast} />
             <div className="flex gap-5 sm:gap-20 flex-col sm:flex-row sm:justify-between">
                 <Title label="記事生成" />
                 {/* <Step end /> */}
