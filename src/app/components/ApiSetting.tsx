@@ -76,6 +76,10 @@ const ApiSetting: React.FC = () => {
         }
     };
 
+    const handleEditModeToggle = (setIsEditMode: React.Dispatch<React.SetStateAction<boolean>>, isEditMode: boolean) => {
+        setIsEditMode(!isEditMode);
+    };
+
     return (
         <div className="flex flex-col gap-6 mt-6">
             <Toast ref={toast} />
@@ -110,13 +114,23 @@ const ApiSetting: React.FC = () => {
                             placeholder="siteUrl"
                             disabled={!isShopifyEditMode}
                         />
-                        <button
-                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && isShopifyEditMode && 'opacity-50 cursor-not-allowed'}`}
-                            type="submit"
-                            disabled={!isShopifyValid && isShopifyEditMode}
-                        >
-                            {isShopifyEditMode ? '追加する' : '編集する'}
-                        </button>
+                        {isShopifyEditMode ? (
+                            <button
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isShopifyValid && 'opacity-50 cursor-not-allowed'}`}
+                                type="submit"
+                                disabled={!isShopifyValid}
+                            >
+                                追加する
+                            </button>
+                        ) : (
+                            <button
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsShopifyEditMode, isShopifyEditMode)}
+                            >
+                                編集する
+                            </button>
+                        )}
                     </div>
                 </div>
             </form>
@@ -151,13 +165,23 @@ const ApiSetting: React.FC = () => {
                             placeholder="siteUrl"
                             disabled={!isWordpressEditMode}
                         />
-                        <button
-                            className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && isWordpressEditMode && 'opacity-50 cursor-not-allowed'}`}
-                            type="submit"
-                            disabled={!isWordpressValid && isWordpressEditMode}
-                        >
-                            {isWordpressEditMode ? '追加する' : '編集'}
-                        </button>
+                        {isWordpressEditMode ? (
+                            <button
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold ${!isWordpressValid && 'opacity-50 cursor-not-allowed'}`}
+                                type="submit"
+                                disabled={!isWordpressValid}
+                            >
+                                追加する
+                            </button>
+                        ) : (
+                            <button
+                                className="text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold"
+                                type="button"
+                                onClick={() => handleEditModeToggle(setIsWordpressEditMode, isWordpressEditMode)}
+                            >
+                                編集する
+                            </button>
+                        )}
                     </div>
                 </div>
             </form>
