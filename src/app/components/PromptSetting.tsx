@@ -17,6 +17,7 @@ interface Prompt {
 const PromptSetting = () => {
     const [prompts, setPrompts] = useState<Prompt[]>([]);
     const toast = useRef<Toast>(null);
+    const [selectedModel, setSelectedModel] = useState<string>('');
 
     useEffect(() => {
         const fetchPrompts = async () => {
@@ -83,12 +84,24 @@ const PromptSetting = () => {
         <div className="flex flex-col gap-6 mt-6">
             <div className="flex items-end justify-center gap-10 sm:mr-40">
                 <div className="flex items-center justify-center gap-4">
-                    <input type="radio" />
+                    <input
+                        type="radio"
+                        name="model"
+                        value="ChatGPT"
+                        checked={selectedModel === 'ChatGPT'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                    />
                     <p className="text-base font-bold">ChatGPT</p>
                 </div>
                 <div className="flex items-center justify-center gap-4">
-                    <input type="radio" />
-                    <p className="text-base font-bold">ChatGPT</p>
+                    <input
+                        type="radio"
+                        name="model"
+                        value="Claude3.5"
+                        checked={selectedModel === 'Claude3.5'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                    />
+                    <p className="text-base font-bold">Claude3.5</p>
                 </div>
             </div>
             <Toast ref={toast} />
