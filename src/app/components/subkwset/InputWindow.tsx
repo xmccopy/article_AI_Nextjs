@@ -35,14 +35,14 @@ const InputWindow: React.FC<InputWindowProps> = ({ isActive, initialContent, onC
     };
 
     return (
-        <div className={`flex items-center ${isActive ? 'border-blue-500' : 'border-gray-300'}`}>
+        <div className={`flex items-center min-h-[30px] ${isActive ? 'border-blue-500' : 'border-gray-300'}`}>
             <textarea
                 ref={textareaRef}
                 value={content}
-                onChange={handleContentChange}
+                onChange={handleContentChange} 
                 disabled={!isActive}
-                className={`w-full p-1 resize-none overflow-hidden ${isActive ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'}`}
-                style={{ minHeight: '2rem' }} // set minimum height to avoid collapse
+                style={{height:"36px"}}
+                className={`w-full p-2 h-6 resize-none overflow-hidden rounded-md ${isActive ? 'bg-white text-black' : 'bg-gray-100 text-gray-500'} `}
             />
         </div>
     );
