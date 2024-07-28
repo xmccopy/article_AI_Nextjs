@@ -86,7 +86,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                         </ul>
                         <ul className="flex flex-col mb-4 gap-1">
                             <li className="mx-3.5 mb-4">
-                                <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">記 事</p>
+                                <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">記事</p>
                             </li>
                             <li>
                                 <SideBtn
@@ -107,7 +107,7 @@ const SideBar: React.FC<SideBarProps> = ({ showSidebar, onClose }) => {
                         </ul>
                         <ul className="flex flex-col mb-4 gap-1">
                             <li className="mx-3.5 mb-4">
-                                <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">設 定</p>
+                                <p className="block antialiased font-sans text-[16px] leading-normal text-[#1A1F36] font-black uppercase opacity-75">設定</p>
                             </li>
                             <li>
                                 <a className="" href="#">

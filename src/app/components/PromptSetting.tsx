@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Toast } from 'primereact/toast';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
+
 interface Prompt {
     id: string;
     prompt: string;
@@ -80,6 +81,16 @@ const PromptSetting = () => {
 
     return (
         <div className="flex flex-col gap-6 mt-6">
+            <div className="flex items-end justify-center gap-10 sm:mr-40">
+                <div className="flex items-center justify-center gap-4">
+                    <input type="radio" />
+                    <p className="text-base font-bold">ChatGPT</p>
+                </div>
+                <div className="flex items-center justify-center gap-4">
+                    <input type="radio" />
+                    <p className="text-base font-bold">ChatGPT</p>
+                </div>
+            </div>
             <Toast ref={toast} />
             {[
                 { label: "Title prompt", type: "title" },
@@ -88,17 +99,44 @@ const PromptSetting = () => {
                 { label: "Content prompt", type: "article" }
             ].map(({ label, type }) => {
                 const { id, prompt } = getPromptByType(type);
+                const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+                const adjustHeight = () => {
+                    const textarea = textareaRef.current;
+                    if (textarea) {
+                        textarea.style.height = 'auto'; // Reset height
+                        textarea.style.height = textarea.scrollHeight + 'px'; // Adjust height
+                    }
+                };
+
+                useEffect(() => {
+                    adjustHeight(); // Adjust height on mount and whenever the prompt changes
+
+                    // Add event listener to adjust height on window resize
+                    window.addEventListener('resize', adjustHeight);
+
+                    // Cleanup event listener on unmount
+                    return () => {
+                        window.removeEventListener('resize', adjustHeight);
+                    };
+                }, [prompt]);
+
                 return (
                     <div key={type}>
                         <p className="text-[14px] text-[#1A1F36] font-bold mb-3">{label}</p>
                         <div className="flex gap-4 mt-4">
                             <textarea
-                                className="w-full sm:w-[350px] h-[80px] p-[12px] text-base border-2 rounded-lg"
+                                ref={textareaRef}
+                                className="w-full resize-none overflow-hidden p-[12px] text-base border-2 rounded-lg"
                                 placeholder="Input prompt"
                                 value={prompt}
-                                onChange={(e) => setPrompts(prevPrompts =>
-                                    prevPrompts.map(p => p.id === id ? { ...p, prompt: e.target.value } : p)
-                                )}
+                                onChange={(e) => {
+                                    setPrompts(prevPrompts =>
+                                        prevPrompts.map(p => p.id === id ? { ...p, prompt: e.target.value } : p)
+                                    );
+                                    adjustHeight(); // Adjust height on input
+                                }}
+                                onInput={adjustHeight} // Adjust height on input
                             />
                             <button
                                 onClick={() => updatePrompt(id, prompt)}
