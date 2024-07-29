@@ -320,7 +320,7 @@ const Home = () => {
           <div className="flex items-center justify-start gap-6">
             <KeyWordShow label={keyword} onKeywordChange={handleKeywordChange} />
             <Button
-              className="custom-class transition-all mt-4"
+              className="custom-class transition-all mt-8"
               onClick={handleSubKwBtn}
               common
               label="サブキーワードを生成する"

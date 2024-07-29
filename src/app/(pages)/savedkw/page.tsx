@@ -9,7 +9,6 @@ import UploadBtn from "../../components/UploadBtn";
 import withAuth from "../../components/withAuth";
 import { useCallback, useState } from "react";
 import axios from "axios";
-import Papa from "papaparse"
 import AddKeyword from "@/app/components/modals/AddKeyword";
 
 interface Keyword {
@@ -24,7 +23,10 @@ const Home = () => {
   const [keywords, setKeywords] = useState<Keyword[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [selectedKeywordsCount, setSelectedKeywordsCount] = useState(0);
 
+  // Determine if there are any selected keywords
+  const hasSelectedKeywords = keywords.some(keyword => keyword.selected);
 
   const handleDownload = useCallback(async () => {
     try {
@@ -42,7 +44,6 @@ const Home = () => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          // responseType: 'blob' // Important for handling file download
         }
       );
 
@@ -84,16 +85,21 @@ const Home = () => {
         }
       );
 
-      // Handle the response from the backend
       console.log('File uploaded successfully:', response.data);
-
-      // You might want to update the keywords state here based on the response
-      // setKeywords(response.data.keywords);
 
     } catch (error) {
       console.error('Error uploading file:', error);
-      // Handle the error (e.g., show an error message to the user)
     }
+  }, []);
+
+  const handleKeywordSelection = useCallback((keywordId: string) => {
+    setKeywords(prevKeywords => {
+      const updatedKeywords = prevKeywords.map(keyword =>
+        keyword.id === keywordId ? { ...keyword, selected: !keyword.selected } : keyword
+      );
+      setSelectedKeywordsCount(updatedKeywords.filter(keyword => keyword.selected).length); // Update selected keywords count
+      return updatedKeywords;
+    });
   }, []);
 
   const handleSearchInputChange = (event) => {
@@ -101,7 +107,7 @@ const Home = () => {
   }
 
   const handleButtonClick = () => {
-      setShowCreditModal(true);
+    setShowCreditModal(true);
   }
 
   const handleGenerateCancel = () => {
@@ -124,7 +130,7 @@ const Home = () => {
           onConfirm={handleAddKeyword}
           onCancel={handleGenerateCancel}
         />
-        <div className="flex flex-col gap-5 relative top-14">
+        <div className="flex flex-col gap-5 relative top-4">
           <div className="flex lg:flex-row flex-col sm:justify-between sm:items-start gap-2">
             <Title label="保存キーワード" />
             <div className="flex sm:flex-row flex-col sm:justify-center sm:gap-6 gap-2">
@@ -144,7 +150,7 @@ const Home = () => {
                     onChange={handleSearchInputChange}
                   />
                 </div>
-                <DownloadBtn onClick={handleDownload} />
+                <DownloadBtn onClick={handleDownload} disabled={!hasSelectedKeywords} />
                 <UploadBtn onFileSelect={handleFileUpload} />
               </div>
               <div className="flex justify-end sm:justify-center">
@@ -159,13 +165,11 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <SavedKw setKeywordsDL={setKeywords} initialKeywords={keywords} searchTerm={searchTerm} />
+          <SavedKw setKeywordsDL={setKeywords} initialKeywords={keywords} searchTerm={searchTerm} handleKeywordSelection={handleKeywordSelection}/>
         </div>
       </Container>
     </>
   );
 }
 
-
 export default withAuth(Home);
-

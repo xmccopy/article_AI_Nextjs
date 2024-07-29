@@ -20,9 +20,9 @@ const StripePlan = () => {
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
     const [getPlan, setGetPlan] = useState<AllPlan[]>([]);
-    // const apiURL = process.env.NEXT_PUBLIC_API_URL;
+    const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
-    const apiService = useMemo(() => new ApiService("http://192.168.136.127:8000"), []);
+    const apiService = useMemo(() => new ApiService(apiURL!), []);
 
     const tofirstpage = () => {
         router.push('/kwgenerate')

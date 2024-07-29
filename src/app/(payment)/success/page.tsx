@@ -13,7 +13,9 @@ const Success = () => {
     const [isVerified, setIsVerified] = useState(false);
     const [verificationStatus, setVerificationStatus] = useState<'pending' | 'success' | 'error'>('pending');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const apiService = useMemo(() => new ApiService("http://192.168.136.127:8000"), []);
+    const apiURL = process.env.NEXT_PUBLIC_API_URL;
+
+    const apiService = useMemo(() => new ApiService(apiURL!), []);
 
     const verifyPayment = useCallback(async (sessionId: string) => {
         try {

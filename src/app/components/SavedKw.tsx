@@ -24,9 +24,10 @@ interface SavedKwProps {
     setKeywordsDL: React.Dispatch<React.SetStateAction<Keyword[]>>;
     initialKeywords: Keyword[];
     searchTerm: string;
+    handleKeywordSelection: (keywordId: string) => void;
 }
 
-const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searchTerm }) => {
+const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searchTerm, handleKeywordSelection }) => {
     const router = useRouter();
     const [filterShow, setFilterShow] = useState(false);
     const [keywords, setKeywords] = useState<Keyword[]>(initialKeywords);
@@ -55,10 +56,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
     }
 
     const getStatusStyle = (status: string) => {
-        if (status === 'Created') {
-            return 'bg-white text-[#5469D4]';
-        }
-        return '';
+        return status === 'Created' ? 'bg-white text-[#5469D4]' : '';
     }
 
     const getStatusLabelBtn = (status: string) => {
@@ -94,7 +92,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
 
             const response = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL!}/article`,
-                { keyword: `${selectedKeyword.keyword}` },
+                { keyword: selectedKeyword.keyword },
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -106,11 +104,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
             setArticleId(response.data.id);
             articleGenerate(response.data.id);
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error("Failed to fetch subkeywords:", error.response?.data || error.message);
-            } else {
-                console.error("Failed to fetch subkeywords:", error);
-            }
+            console.error("Failed to generate article:", error);
         } finally {
             setIsLoading(false);
         }
@@ -136,24 +130,14 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
         setKeywordsDL(newKeywords);
     };
 
-    const handleCheckboxChange = (id: string) => {
-        const newKeywords = keywords.map(keyword =>
-            keyword.id === id ? { ...keyword, selected: !keyword.selected } : keyword
-        );
-        setKeywords(newKeywords);
-        setKeywordsDL(newKeywords);
-    };
-
     const handleSort = () => {
         const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
         setSortOrder(newSortOrder);
         setKeywords(prevKeywords => {
             return [...prevKeywords].sort((a, b) => {
-                if (newSortOrder === 'asc') {
-                    return a.keyword.localeCompare(b.keyword);
-                } else {
-                    return b.keyword.localeCompare(a.keyword);
-                }
+                return newSortOrder === 'asc'
+                    ? a.keyword.localeCompare(b.keyword)
+                    : b.keyword.localeCompare(a.keyword);
             });
         });
     };
@@ -165,17 +149,15 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
             return [...prevKeywords].sort((a, b) => {
                 const volumeA = parseInt(a.volume, 10);
                 const volumeB = parseInt(b.volume, 10);
-                if (newSortOrder === 'asc') {
-                    return volumeA - volumeB;
-                } else {
-                    return volumeB - volumeA;
-                }
+                return newSortOrder === 'asc'
+                    ? volumeA - volumeB
+                    : volumeB - volumeA;
             });
         });
     };
 
     const toggleStatusDropdown = () => {
-        setStatusDropdownVisible(!statusDropdownVisible);
+        setStatusDropdownVisible(prev => !prev);
     }
 
     const handleStatusFilter = (status: string | null) => {
@@ -208,11 +190,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                 setKeywords(sortedKeywords);
                 setKeywordsDL(sortedKeywords); // Update the parent component's state
             } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    console.log("Failed to fetch keywords:", error.response?.data || error.message);
-                } else {
-                    console.log("Failed to fetch keywords:", error);
-                }
+                console.error("Failed to fetch keywords:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -222,10 +200,8 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
     }, [setKeywordsDL]);
 
     const filteredKeywords = keywords.filter(keyword => {
-        if (statusFilter) {
-            return keyword.status === statusFilter && keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
-        }
-        return keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
+        return (!statusFilter || keyword.status === statusFilter) &&
+            keyword.keyword.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
     return (
@@ -286,21 +262,21 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                                         <input
                                             type="checkbox"
                                             checked={keyword.selected}
-                                            onChange={() => handleCheckboxChange(keyword.id)}
+                                            onChange={() => handleKeywordSelection(keyword.id)}
                                             className="size-5 rounded border-gray-300"
                                         />
                                     </td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
-                                        <span className={`p-2 rounded bg-white text-[#5469D4] ${getStatusStyle(keyword.status)}`}>
+                                        <span className={`p-2 rounded ${getStatusStyle(keyword.status)}`}>
                                             {getStatusLabel(keyword.status)}
                                         </span>
                                     </td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
                                         <Button
                                             className="custom-class"
-                                            disabled={false}
+                                            disabled={keyword.status === 'Created'}
                                             onClick={() => handleButtonClick(keyword)}
                                             common
                                             icon={FaStar}
