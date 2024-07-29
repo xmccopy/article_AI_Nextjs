@@ -20,20 +20,20 @@ interface Config {
 
 interface ConfigManagerProps {
     initialConfigs: Config[];
+    updateFinalConfig: (config: Config[]) => void;
 }
 
-const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs }) => {
+const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs, updateFinalConfig }) => {
     const [configs, setConfigs] = useState<Config[]>(initialConfigs);
-    const [finalConfig, setFinalConfig] = useState<Config[]>(initialConfigs);
 
     useEffect(() => {
         setConfigs(initialConfigs);
-        setFinalConfig(initialConfigs);
+        
     }, [initialConfigs]);
 
     useEffect(() => {
-        setFinalConfig(configs);
-    }, [configs]);
+        updateFinalConfig(configs);
+    }, [configs, updateFinalConfig])
 
     const addH2 = () => {
         const newH2: Config = {
@@ -100,6 +100,29 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs }) => {
         );
     };
 
+    const handleSubtitleChange = (configId: string, subtitleId: string, newText: string) => {
+        setConfigs(prevConfigs =>
+            prevConfigs.map(config =>
+                config.id === configId
+                    ? {
+                          ...config,
+                          subtitles: config.subtitles.map(sub =>
+                              sub.id === subtitleId ? { ...sub, text: newText } : sub
+                          )
+                      }
+                    : config
+            )
+        );
+    };
+
+    const handleConfigChange = (configId: string, newText: string) => {
+        setConfigs(prevConfigs =>
+            prevConfigs.map(config =>
+                config.id === configId ? { ...config, text: newText } : config
+            )
+        );
+    };
+
     return (
         <div>
             <div className="flex items-center justify-center gap-4">
@@ -112,6 +135,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs }) => {
                     configs={configs}
                     onDeleteConfig={handleDeleteConfig}
                     onDeleteSubtitle={handleDeleteSubtitle}
+                    onConfigChange={handleConfigChange}
+                    onSubtitleChange={handleSubtitleChange}
                 />
             </DragDropContext>
         </div>

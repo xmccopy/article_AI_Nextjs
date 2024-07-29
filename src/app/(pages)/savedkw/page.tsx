@@ -124,7 +124,7 @@ const Home = () => {
           onConfirm={handleAddKeyword}
           onCancel={handleGenerateCancel}
         />
-        <div className="flex flex-col gap-5 relative">
+        <div className="flex flex-col gap-5 relative top-14">
           <div className="flex lg:flex-row flex-col sm:justify-between sm:items-start gap-2">
             <Title label="保存キーワード" />
             <div className="flex sm:flex-row flex-col sm:justify-center sm:gap-6 gap-2">

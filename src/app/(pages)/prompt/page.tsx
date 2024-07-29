@@ -11,7 +11,7 @@ const Home = () => {
 
     return (
         <Container>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5 pt-16">
                 <Title label="Prompt" />
             </div>
             <PromptSetting/>

@@ -45,7 +45,8 @@ export default function RootLayout({
       <div ref={sidebarRef}>
         <SideBar showSidebar={showSidebar} onClose={closeSidebar} />
       </div>
-      <div className="p-4 xl:ml-[300px]">
+      <div className="xl:ml-[300px]">
+        <TopBar/>
         <button
           ref={buttonRef}
           onClick={toggleSidebar}
@@ -53,7 +54,6 @@ export default function RootLayout({
         >
           <FiAlignJustify size={30} />
         </button>
-        <TopBar />
         {children}
       </div>
     </div>

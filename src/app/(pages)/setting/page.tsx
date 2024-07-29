@@ -446,7 +446,7 @@ const Home = () => {
                     </tr>
                   </thead>
                 </table>
-                <ConfigManager initialConfigs={finalConfig} />
+                <ConfigManager initialConfigs={finalConfig} updateFinalConfig={setFinalConfig}/>
               </div>
             </div>
           </div>

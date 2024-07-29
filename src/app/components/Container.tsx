@@ -12,7 +12,8 @@ const Container: React.FC<ContainerProps> = ({
             className="
                 max-w-[calc(100% - 270px)]
                 mx-auto
-                mt-8
+                pt-[100px]
+                pb-12
                 xl:px-10
                 md:px-5
                 sm:px-2

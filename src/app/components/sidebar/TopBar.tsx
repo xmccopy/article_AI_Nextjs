@@ -5,10 +5,10 @@ import Progress from "./Progress";
 
 const TopBar = () => {
     return (
-        <nav className="block w-full max-w-full fixed z-40 text-[#1A1F36] shadow-none transition-all py-1">
-            <div className="flex sm:flex-row flex-col sm:items-center justify-between gap-3">
-                <p className="text-[14px]">キーワード / キーワード生成</p>
-                <div className="w-[165px] mr-10">
+        <nav className="fixed top-0 block w-full h-[100px] max-w-full  z-30 text-[#1A1F36] shadow-none transition-all py-1 bg-[url(/images/bg.png)] bg-cover">
+            <div className="flex sm:flex-row flex-col sm:items-center justify-between">
+                <p className="text-[14px] ml-4 mt-4">キーワード / キーワード生成</p>
+                <div className=" mr-16 mt-3 ml-6 w-[165px] sm:fixed  z-50 right-0 top-4">
                     <Progress/>
                 </div>
             </div>

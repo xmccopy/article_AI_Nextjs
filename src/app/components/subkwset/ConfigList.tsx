@@ -23,9 +23,11 @@ interface ConfigListProps {
     addH3: (h2Index: number) => void;
     onDeleteConfig: (configId: string) => void;
     onDeleteSubtitle: (configId: string, subtitleId: string) => void;
+    onConfigChange: (configId: string, newText: string) => void;  // Add this prop to handle config changes
+    onSubtitleChange: (configId: string, subtitleId: string, newText: string) => void;  // Add this prop to handle subtitle changes
 }
 
-const ConfigList: React.FC<ConfigListProps> = ({ configs, addH3, onDeleteConfig, onDeleteSubtitle }) => {
+const ConfigList: React.FC<ConfigListProps> = ({ configs, addH3, onDeleteConfig, onDeleteSubtitle, onConfigChange, onSubtitleChange }) => {
     return (
         <Droppable droppableId="configs" type="h2">
             {(provided) => (
@@ -41,8 +43,11 @@ const ConfigList: React.FC<ConfigListProps> = ({ configs, addH3, onDeleteConfig,
                                 >
                                     <div className='flex items-center justify-start gap-1'>
                                         <h2 className='font-bold'>h2</h2>
-                                        <ConfigEdit configcontent={config.text} onDelete={()=>onDeleteConfig(config.id)}/>
-                                        {/* <button onClick={() => addH3(index)} className="ml-2 p-1 bg-green-500 text-white">Add h3</button> */}
+                                        <ConfigEdit 
+                                            configcontent={config.text} 
+                                            onDelete={() => onDeleteConfig(config.id)} 
+                                            onSave={(newContent) => onConfigChange(config.id, newContent)}
+                                        />
                                     </div>
                                     <Droppable droppableId={`h2-${index}`} type="h3">
                                         {(provided) => (
@@ -62,7 +67,11 @@ const ConfigList: React.FC<ConfigListProps> = ({ configs, addH3, onDeleteConfig,
                                                             >
                                                                 <div className='flex items-center justify-start gap-1'>
                                                                     <h3>h3</h3>
-                                                                    <ConfigEdit configcontent={subtitle.text} onDelete={()=>onDeleteSubtitle(config.id, subtitle.id)}/>
+                                                                    <ConfigEdit 
+                                                                        configcontent={subtitle.text} 
+                                                                        onDelete={() => onDeleteSubtitle(config.id, subtitle.id)} 
+                                                                        onSave={(newContent) => onSubtitleChange(config.id, subtitle.id, newContent)}
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         )}
@@ -72,7 +81,7 @@ const ConfigList: React.FC<ConfigListProps> = ({ configs, addH3, onDeleteConfig,
                                             </div>
                                         )}
                                     </Droppable>
-                                    <div  onClick={() => addH3(index)} className="flex items-center justify-start gap-4 my-4 ml-5 hover:font-bold">
+                                    <div onClick={() => addH3(index)} className="flex items-center justify-start gap-4 my-4 ml-5 hover:font-bold">
                                         <BsPlusCircleDotted size={25}/>
                                         <p>h3 追加</p>
                                     </div>
