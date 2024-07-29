@@ -148,7 +148,40 @@ const ApiSetting: React.FC = () => {
         <div className="flex flex-col gap-6 mt-6">
             <Toast ref={toast} />
             <form>
-                <p className="text-[14px] text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
+                <p className="text-base text-[#1A1F36] mb-3 font-bold">ShopifyのAPIキー</p>
+                <div className="flex flex-col gap-4 mt-4">
+                    <input
+                        type="text"
+                        name="apiUsername"
+                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                        placeholder="Input apiUsername"
+                    />
+                    <input
+                        type="password"
+                        name="apiPassword"
+                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                        placeholder="Input apiPassword"
+                    />
+                    <input
+                        type="text"
+                        name="siteUrl"
+                        className="w-full sm:w-[350px] h-[50px] p-[12px] text-base border-2 rounded-lg"
+                        placeholder="siteUrl"
+                    />
+                    <div className="flex gap-4 flex-col sm:flex-row">
+                        
+                            <button
+                                className={`text-[14px] rounded-md text-[#5469D4] bg-slate-100 w-full sm:w-[100px] h-[50px] hover:font-bold`}
+                                onClick={handleAddClick}
+                                type="button"
+                            >
+                                追加する
+                            </button>
+                    </div>
+                </div>
+            </form>
+            <form>
+                <p className="text-base text-[#1A1F36] mb-3 font-bold">WordPressのAPIキー</p>
                 <div className="flex flex-col gap-4 mt-4">
                     <input
                         type="text"
