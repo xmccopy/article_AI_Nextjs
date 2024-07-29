@@ -28,7 +28,7 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs, updateFin
 
     useEffect(() => {
         setConfigs(initialConfigs);
-        
+
     }, [initialConfigs]);
 
     useEffect(() => {
@@ -105,11 +105,11 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs, updateFin
             prevConfigs.map(config =>
                 config.id === configId
                     ? {
-                          ...config,
-                          subtitles: config.subtitles.map(sub =>
-                              sub.id === subtitleId ? { ...sub, text: newText } : sub
-                          )
-                      }
+                        ...config,
+                        subtitles: config.subtitles.map(sub =>
+                            sub.id === subtitleId ? { ...sub, text: newText } : sub
+                        )
+                    }
                     : config
             )
         );
@@ -125,8 +125,8 @@ const ConfigManager: React.FC<ConfigManagerProps> = ({ initialConfigs, updateFin
 
     return (
         <div>
-            <div className="flex items-center justify-center gap-4">
-                <BsPlusCircleDotted onClick={addH2} size={25} className="mb-2" />
+            <div onClick={addH2} className="flex items-center justify-start gap-4 my-4 ml-5 hover:font-bold cursor-pointer">
+                <BsPlusCircleDotted size={25}/>
                 <p>h2 追加</p>
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
