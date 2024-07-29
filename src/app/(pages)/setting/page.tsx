@@ -400,7 +400,6 @@ const Home = () => {
 
           <SubTitle order="2" label="タイトルを設定してください" sublabel="" />
           <div className="text-[#3C4257]">
-            <p className="text-[14px] mb-3 font-medium">タイトル案</p>
             <TitleContainer
               generateTitles={generateTitles}
               setFinalTitle={setFinalTitle}
