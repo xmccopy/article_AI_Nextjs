@@ -45,6 +45,33 @@ const PromptSetting = () => {
         fetchPrompts();
     }, []);
 
+    useEffect(() => {
+        const fetchAIModel = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL!}/ai-model`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+                );
+
+                const aiModel = response.data;
+                console.log("_+_+_+_+_+_+_+_+_", aiModel);
+                setSelectedModel(aiModel.model);
+            } catch (error) {
+                console.error('Failed to fetch AI tool:', error);
+            }
+        }
+
+        fetchAIModel();
+    }, []);
+
     const updatePrompt = async (id: string, newPrompt: string) => {
         try {
             const token = localStorage.getItem('token');
@@ -68,13 +95,43 @@ const PromptSetting = () => {
             );
 
             if (toast.current) {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Login successful!', life: 2000 });
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Prompt updated successfully!', life: 2000 });
             }
             console.log(`Prompt updated successfully`);
 
         } catch (error) {
             console.error(`Failed to update prompt:`, error);
-            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'An error occurred during registration', life: 2000 });
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'An error occurred during updating prompt', life: 2000 });
+        }
+    };
+
+    const updateModel = async (model: string) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            await axios.patch(
+                `${process.env.NEXT_PUBLIC_API_URL!}/ai-model`,
+                { model },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            setSelectedModel(model);
+
+            if (toast.current) {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Model updated successfully!', life: 2000 });
+            }
+            console.log(`Model updated successfully`);
+
+        } catch (error) {
+            console.error(`Failed to update model:`, error);
+            toast.current?.show({ severity: 'error', summary: 'Error', detail: 'An error occurred during updating model', life: 2000 });
         }
     };
 
@@ -87,9 +144,9 @@ const PromptSetting = () => {
                     <input
                         type="radio"
                         name="model"
-                        value="ChatGPT"
-                        checked={selectedModel === 'ChatGPT'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
+                        value="chatgpt"
+                        checked={selectedModel === "chatgpt"}
+                        onChange={(e) => updateModel(e.target.value)}
                     />
                     <p className="text-base font-bold">ChatGPT</p>
                 </div>
@@ -97,9 +154,9 @@ const PromptSetting = () => {
                     <input
                         type="radio"
                         name="model"
-                        value="Claude3.5"
-                        checked={selectedModel === 'Claude3.5'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
+                        value="claude"
+                        checked={selectedModel === "claude"}
+                        onChange={(e) => updateModel(e.target.value)}
                     />
                     <p className="text-base font-bold">Claude3.5</p>
                 </div>

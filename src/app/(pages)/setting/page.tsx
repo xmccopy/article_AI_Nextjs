@@ -2,7 +2,6 @@
 
 import Title from "@/app/components/Title";
 import Container from "../../components/Container";
-import Step from "@/app/components/Step";
 import KeyWordShow from "@/app/components/subkwset/keywordis";
 import SubKwSetting from "@/app/components/subkwset/subkwset";
 import Button from "@/app/components/Button";
@@ -104,42 +103,6 @@ const Home = () => {
     return titleFinalGenerationLimit <= 0 || finalTitle.trim() === '';
   }, [titleFinalGenerationLimit, finalTitle]);
 
-  const fetchSubKeywords = useCallback(async (articleId: string) => {
-    if (!articleId) return;
-    setIsLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
-
-
-      // localStorage.setItem('articleId',response.data.id);
-
-      setArticleId(response.data?.id);
-      setKeyowrd(response.data?.keyword);
-      setSubKeywords(response.data?.subKeywords);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Failed to fetch subkeywords:", error.response?.data || error.message);
-      } else {
-        console.error("Failed to fetch subkeywords:", error);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   const updateSubKeywords = async () => {
     if (titleGenerationLimit <= 0) return;
     setBtnIsLoading(true);
@@ -163,6 +126,11 @@ const Home = () => {
           }
         }
       );
+
+      setArticleId(response.data?.id);
+      setKeyowrd(response.data?.keyword);
+      setSubKeywords(response.data?.subKeywords);
+
 
       if (response.data.titleslist) {
         setGenerateTitles(response.data.titleslist);
@@ -223,7 +191,7 @@ const Home = () => {
       setBtnTitleIsLoading(false);
     }
   };
-  //function to check if any subkeywords are selected
+
   const isAnySubKeywordSelected = () => {
     return Array.isArray(subKeywords) && subKeywords.some(kw => kw.selected);
   }
@@ -249,6 +217,51 @@ const Home = () => {
   const handleKeywordChange = async (newKeyword: string) => {
     setKeyowrd(newKeyword);
   };
+
+  const fetchSubKeywords = useCallback(async (articleId: string) => {
+    if (!articleId) return;
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article/${articleId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+
+      console.log("setting-page:", response.data);
+
+      setArticleId(response.data?.id);
+      setKeyowrd(response.data?.keyword);
+      setSubKeywords(response.data?.subKeywords);
+
+      setGenerateTitles(response.data?.titleslist);
+      if (response.data?.title === null) {
+        setFinalTitle;
+      } else {
+        setFinalTitle(response.data?.title)
+      }
+      setFinalConfig(response.data?.configuration)
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to fetch subkeywords:", error.response?.data || error.message);
+      } else {
+        console.error("Failed to fetch subkeywords:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleSubKeywordGenerate = async () => {
     sestIsSubKwGenerate(true);
@@ -299,9 +312,12 @@ const Home = () => {
     fetchSubKeywords(articleId);
   }, [articleId, fetchSubKeywords]);
 
+
   useEffect(() => {
     const articleIdParam = searchParams.get('articleId');
     if (articleIdParam) setArticleId(articleIdParam);
+    const keywordParam = searchParams.get('keyword');
+    if (keywordParam) setKeyowrd(keywordParam);
   }, [searchParams]);
 
   return (

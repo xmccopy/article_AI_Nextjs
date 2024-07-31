@@ -56,7 +56,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
     }
 
     const getStatusStyle = (status: string) => {
-        return status === 'Created' ? 'bg-white text-[#5469D4]' : '';
+        return status === 'Created' ? 'bg-[#FF854F] text-white' : '';
     }
 
     const getStatusLabelBtn = (status: string) => {
@@ -84,38 +84,38 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
             return;
         }
 
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
+        articleGenerate(selectedKeyword.keyword);
+        // try {
+        //     const token = localStorage.getItem('token');
+        //     if (!token) {
+        //         throw new Error('No authentication token found');
+        //     }
 
-            const response = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL!}/article`,
-                { keyword: selectedKeyword.keyword },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                }
-            );
+        //     // const response = await axios.post(
+        //     //     `${process.env.NEXT_PUBLIC_API_URL!}/article`,
+        //     //     { keyword: selectedKeyword.keyword },
+        //     //     {
+        //     //         headers: {
+        //     //             'Content-Type': 'application/json',
+        //     //             'Authorization': `Bearer ${token}`
+        //     //         }
+        //     //     }
+        //     // );
 
-            setArticleId(response.data.id);
-            articleGenerate(response.data.id);
-        } catch (error) {
-            console.error("Failed to generate article:", error);
-        } finally {
-            setIsLoading(false);
-        }
+        //     // setArticleId(response.data.id);
+        // } catch (error) {
+        //     console.error("Failed to generate article:", error);
+        // } finally {
+        //     setIsLoading(false);
+        // }
     }
 
     const handleGenerateCancel = () => {
         setShowCreditModal(false);
     }
 
-    const articleGenerate = (articleId: string) => {
-        router.push(`/setting?articleId=${articleId}`);
+    const articleGenerate = (keyword: string) => {
+        router.push(`/setting?keyword=${keyword}`);
     };
 
     const handleSelectAll = () => {
@@ -269,7 +269,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.keyword}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{keyword.volume}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">
-                                        <span className={`p-2 rounded ${getStatusStyle(keyword.status)}`}>
+                                        <span className={`py-2 px-4 rounded-full ${getStatusStyle(keyword.status)}`}>
                                             {getStatusLabel(keyword.status)}
                                         </span>
                                     </td>
