@@ -259,16 +259,18 @@ const ArticleEnd = () => {
             <div className="flex sm:flex-row flex-col gap-4 mt-4">
                 <div className="bg-[#F5F8F8] p-6 flex flex-col gap-4 text-[#1A1F36]">
                     <h2 className="text-xl font-bold mb-4">見出し</h2>
-                    {articleConfig.map((config, index) => (
-                        <div key={index}>
-                            <h2 className="text-xl">{config.text}</h2>
-                            {config.subtitles.map((subtitle, subIndex) => (
-                                <div key={subIndex}>
-                                    <h3 className="text-lg ml-4">{subtitle.text}</h3>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
+                    {articleConfig.length !== null && (
+                        articleConfig.map((config, index) => (
+                            <div key={index}>
+                                <h2 className="text-xl">{config.text}</h2>
+                                {config.subtitles.map((subtitle, subIndex) => (
+                                    <div key={subIndex}>
+                                        <h3 className="text-lg ml-4">{subtitle.text}</h3>
+                                    </div>
+                                ))}
+                            </div>
+                        ))
+                    )}
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="relative">
