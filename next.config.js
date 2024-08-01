@@ -4,7 +4,8 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ['lh3.googleusercontent.com', '192.168.136.127'],
+    domains: ['lh3.googleusercontent.com', '62.3.6.59'],
+
   },
 };
 

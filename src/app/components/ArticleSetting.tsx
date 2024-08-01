@@ -308,7 +308,7 @@ const ArticleSetting = () => {
                     />
                 </div>
             </div>
-            <div className="overflow-y-scroll scrollbar-thin relative rounded-xl">
+            <div className="overflow-x-scroll scrollbar-thin relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
                         <tr>
@@ -366,7 +366,7 @@ const ArticleSetting = () => {
                                     </td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.title}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.keyword}</td>
-                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px] w-[150px] overflow-x-scroll">
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px] w-[150px] overflow-x-auto">
                                         {article.subKeywords.map((subKeyword, index) => (
                                             <span key={index}>{subKeyword.text} ◦ </span>
                                         ))}

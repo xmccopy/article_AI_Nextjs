@@ -283,6 +283,18 @@ const Home = () => {
       );
 
       const newArticleId = response.data.id;
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL!}/keyword/create-one`,
+        { keyword, articleId: newArticleId },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
       route.push(`/setting?articleId=${newArticleId}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -299,7 +311,7 @@ const Home = () => {
     setShowSubKWGenerate(true);
   }
 
-  const handleSubKwConfirm =() => {
+  const handleSubKwConfirm = () => {
     handleSubKeywordGenerate();
     setShowSubKWGenerate(false);
   }
@@ -323,9 +335,9 @@ const Home = () => {
   return (
     <>
       <SubKWGenerate
-         show={showSubKWGenerate}
-         onConfirm={handleSubKwConfirm}
-         onCancel={handleSubKwCancel}
+        show={showSubKWGenerate}
+        onConfirm={handleSubKwConfirm}
+        onCancel={handleSubKwCancel}
       />
       <Container>
         <div className="flex flex-col gap-5">
@@ -461,7 +473,7 @@ const Home = () => {
                     </tr>
                   </thead>
                 </table>
-                <ConfigManager initialConfigs={finalConfig} updateFinalConfig={setFinalConfig}/>
+                <ConfigManager initialConfigs={finalConfig} updateFinalConfig={setFinalConfig} />
               </div>
             </div>
           </div>
