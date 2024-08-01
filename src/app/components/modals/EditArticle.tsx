@@ -20,7 +20,7 @@ const EditArticle: React.FC<EditArticleProps> = ({
     return (
         <div className="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity" aria-hidden="true"></div>
-            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="fixed inset-0 z-10 w-screen overflow-y-scroll scrollbar-thin">
                 <div className="flex min-h-full justify-center p-4 text-center items-center sm:p-0">
                     <div className="relative transform overflow-hidden rounded-lg bg-gray-100 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                         <div className="px-4 py-6 sm:p-6 sm:pb-4">

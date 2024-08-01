@@ -451,7 +451,7 @@ const Home = () => {
             />
             <div className="w-full sm:pl-4 mt-4 sm:mt-0">
               <p className="text-[14px] mb-4">記事構成</p>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-scroll scrollbar-thin">
                 <table className="divide-y-2 divide-gray-200 bg-white text-sm">
                   <thead className=" bg-gray-200 text-left">
                     <tr>

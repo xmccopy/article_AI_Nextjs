@@ -212,7 +212,7 @@ const SavedKw: React.FC<SavedKwProps> = ({ setKeywordsDL, initialKeywords, searc
                 onCancel={handleGenerateCancel}
             />
             {/* <Filter onShow={filterShow} /> */}
-            <div className="overflow-x-auto relative rounded-xl">
+            <div className="overflow-x-scroll scrollbar-thin relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
                         <tr>

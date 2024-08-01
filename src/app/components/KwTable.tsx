@@ -98,7 +98,7 @@ const KwTable: React.FC<KwTableProps> = ({ keywords: initialKeywords }) => {
 
     return (
         <div className="w-full flex flex-col gap-5 ">
-            <div className="overflow-x-auto rounded-xl">
+            <div className="overflow-y-scroll rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
                         <tr>

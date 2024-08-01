@@ -366,7 +366,7 @@ const ArticleSetting = () => {
                                     </td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.title}</td>
                                     <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px]">{article.keyword}</td>
-                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px] w-[150px] overflow-x-auto">
+                                    <td className="whitespace-nowrap px-8 py-2 font-medium text-gray-900 text-[14px] w-[150px] overflow-x-scroll">
                                         {article.subKeywords.map((subKeyword, index) => (
                                             <span key={index}>{subKeyword.text} ◦ </span>
                                         ))}

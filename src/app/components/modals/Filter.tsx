@@ -91,7 +91,7 @@ const Filter: React.FC<FilterProps> = ({
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-[13px] overflow-y-auto h-[100px]">
+                            <div className="flex flex-col gap-[13px] ovoverflow-y-scroll scrollbar-thin h-[100px]">
                                 {selectedKeywords.map((keyword) => (
                                     <div className="flex flex-row gap-[9px]" key={keyword.id}>
                                         <input type="checkbox" checked={keyword.selected} onChange={() => handleCheckboxChange(keyword.id)} />
