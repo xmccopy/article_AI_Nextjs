@@ -263,6 +263,40 @@ const Home = () => {
     }
   }, []);
 
+  const fetchAutoSubKeywords = async (keyword: string) => {
+    sestIsSubKwGenerate(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log("keyword___", keyword)
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL!}/article`,
+        { keyword },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      const newArticleId = response.data.id;
+      setSubKeywords(response.data?.subkeyword);
+      route.push(`/setting?articleId=${newArticleId}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to generate subkeywords:", error.response?.data || error.message);
+      } else {
+        console.error("Failed to generate subkeywords:", error);
+      }
+    } finally {
+      sestIsSubKwGenerate(false);
+    }
+  };
+
   const handleSubKeywordGenerate = async () => {
     sestIsSubKwGenerate(true);
     try {
@@ -322,8 +356,11 @@ const Home = () => {
 
   useEffect(() => {
     fetchSubKeywords(articleId);
-  }, [articleId, fetchSubKeywords]);
+  }, [articleId]);
 
+  useEffect(() => {
+    fetchAutoSubKeywords(keyword);
+  }, [keyword])
 
   useEffect(() => {
     const articleIdParam = searchParams.get('articleId');
