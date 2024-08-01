@@ -93,6 +93,7 @@ const StripePlan = () => {
                 }
 
                 const response = await apiService.getPlans();
+                console.log("adsfasdfsa", response.data.allPlan)
                 setGetPlan(response.data.allPlan);
 
             } catch (error) {

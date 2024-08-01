@@ -4,7 +4,7 @@ import { HiOutlineDownload } from "react-icons/hi";
 
 interface DownloadBtnProps {
     onClick: () => void;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 const DownloadBtn: React.FC<DownloadBtnProps> = ({

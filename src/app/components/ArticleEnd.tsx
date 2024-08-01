@@ -272,9 +272,9 @@ const ArticleEnd = () => {
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="relative">
-                        {/* <figure>
+                        <figure>
                             <BgImage imageUrl={imageUrl} />
-                        </figure> */}
+                        </figure>
                         <div className="absolute bottom-4 right-8 flex flex-row gap-2 z-50">
                             <DownloadBtn onClick={handleDownloadImage} />
                             <Button

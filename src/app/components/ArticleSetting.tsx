@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IoFilter } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
@@ -22,13 +22,14 @@ interface Article {
     volume: number;
 }
 
-interface Keyword {
-    keyword: string;
-    status: string;
+interface DropdownPosition {
+    top: number;
+    right: number;
 }
 
 const ArticleSetting = () => {
     const router = useRouter();
+    const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({ top: 0, right: 0 });
     const [articles, setArticles] = useState<Article[]>([]);
     const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +39,18 @@ const ArticleSetting = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
     const [filter, setFilter] = useState('');
     const [selectedArticles, setSelectedArticles] = useState<number[]>([]);
+    const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setShowDropdown(null); // Close the dropdown
+            }
+        };
+    
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.checked) {
@@ -98,10 +111,33 @@ const ArticleSetting = () => {
         setShowCreditModal(false);
     }
 
-    const handleEllipsisClick = (articleId: number) => {
-        setShowDropdown(prevState => prevState === articleId ? null : articleId);
-    }
+    const handleEllipsisClick = (articleId: number, event: React.MouseEvent<HTMLElement>) => {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        const dropdownWidth = 200; // Example width
+        const dropdownHeight = 150; // Example height
+        const offset = 5; // Offset from the element
 
+        let top = rect.bottom + window.scrollY + offset - 10;
+        let right = window.innerWidth - rect.right - dropdownWidth - offset;
+
+        // Adjust position if the dropdown goes beyond the viewport
+        if (right < 0) {
+            right = offset + 80; // Align to the left of the viewport
+        }
+        if (top + dropdownHeight > window.innerHeight + window.scrollY) {
+            top = rect.top + window.scrollY - dropdownHeight - offset; // Position above if below viewport
+        }
+
+        // Update state with the calculated position
+        setDropdownPosition({
+            top,
+            right
+        });
+
+        // Toggle dropdown visibility
+        setShowDropdown(prevState => prevState === articleId ? null : articleId);
+    };
+    
     const wordPressPost = async (articleId: number) => {
         try {
             const token = localStorage.getItem('token');
@@ -272,7 +308,7 @@ const ArticleSetting = () => {
                     />
                 </div>
             </div>
-            <div className="overflow-x-auto relative rounded-xl">
+            <div className="overflow-y-scroll scrollbar-thin relative rounded-xl">
                 <table className="min-w-full">
                     <thead className="bg-white text-left p-2">
                         <tr>
@@ -285,7 +321,7 @@ const ArticleSetting = () => {
                                     checked={filteredArticles.length > 0 && selectedArticles.length === filteredArticles.length}
                                 />
                             </th>
-                            <th className="whitespace-nowrap w-[25%] px-8 py-2">
+                            <th className="whitespace-nowrap w-[30%] px-8 py-2">
                                 <div className="flex flex-row gap-3">
                                     <p className="font-bold text-gray-900 text-xs">記事タイトル</p>
                                     <IoFilter onClick={handleArticleTitleSort} className="cursor-pointer" />
@@ -350,35 +386,10 @@ const ArticleSetting = () => {
                                                 label={getStatusLabelBtn(article.status)}
                                             />
                                             <FaEllipsisVertical
-                                                className="cursor-pointer mr-4"
+                                                className="cursor-pointer mr-4 relative z-50"
                                                 size={20}
-                                                onClick={() => handleEllipsisClick(article.id)}
+                                                onClick={(e) => handleEllipsisClick(article.id, e)}
                                             />
-                                            {showDropdown === article.id && (
-                                                <div className="absolute right-8 w-48 bg-white border border-gray-300 rounded-md shadow-lg z-50">
-                                                    <ul>
-                                                        <li
-                                                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
-                                                            onClick={() => wordPressPost(article.id)}
-                                                        >
-                                                           ◦  WordPress連携
-                                                        </li>
-                                                        <li
-                                                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
-                                                            onClick={() => shopifyPost(article.id)}
-                                                        >
-                                                           ◦  Shopify連携
-                                                        </li>
-                                                        <hr />
-                                                        <li
-                                                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer ml-2"
-                                                            onClick={() => handleDeleteArticle(article.id)}
-                                                        >
-                                                            削 除
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -393,6 +404,35 @@ const ArticleSetting = () => {
                     </tbody>
                 </table>
             </div>
+            {showDropdown !== null && (
+                <div
+                    ref={dropdownRef}
+                    className="absolute bg-white border border-gray-300 rounded-md shadow-lg z-50"
+                    style={{ top: dropdownPosition.top, right: dropdownPosition.right}}
+                >
+                    <ul>
+                        <li
+                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => wordPressPost(showDropdown)}
+                        >
+                            ◦  WordPress連携
+                        </li>
+                        <li
+                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => shopifyPost(showDropdown)}
+                        >
+                            ◦  Shopify連携
+                        </li>
+                        <hr />
+                        <li
+                            className="text-sm p-2 hover:bg-gray-100 cursor-pointer ml-2"
+                            onClick={() => handleDeleteArticle(showDropdown)}
+                        >
+                            削 除
+                        </li>
+                    </ul>
+                </div>
+            )}
         </>
     );
 }

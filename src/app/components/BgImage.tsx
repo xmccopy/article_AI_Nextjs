@@ -10,7 +10,7 @@ const BgImage: React.FC<BgImageProps> = ({
     imageUrl
 }) => {
     {
-        let url = `http://5.253.41.184:8000/downloads/${imageUrl.imageUrl}`;
+        let url = `http://62.3.6.59:8000/downloads/${imageUrl.imageUrl}`;
         return (
             <div className="w-full h-[550px] relative">
                 <Image
